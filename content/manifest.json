@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "Notes",
-    "description": "Reference sheets, working notes and things worth writing down once and looking up later."
+    "description": "Reference sheets and working notes."
   },
   "notes": [
     {
@@ -29,7 +29,7 @@
     {
       "file": "jax-keras-reference.md",
       "slug": "jax-keras-reference",
-      "title": "JAX, Keras, and NumPy Reference Sheet",
+      "title": "JAX, Keras and NumPy Reference Sheet",
       "date": "2026-08-27",
       "category": "Reference",
       "excerpt": "A quick lookup cheatsheet for JAX and Keras 3 — array ops, functional transforms, explicit PRNG keys, and building/training a model, runnable on a free Colab TPU.",
