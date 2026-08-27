@@ -1,0 +1,71 @@
+<p><strong>Contents:</strong>
+  <a href="#every-day">Every day</a> ·
+  <a href="#branches">Branches</a> ·
+  <a href="#undo">Undoing things</a> ·
+  <a href="#inspecting">Inspecting history</a></p>
+
+<p>The commands that actually come up, and the few that dig you out of a hole.
+Full docs: <a href="https://git-scm.com/docs">git-scm.com/docs</a>.</p>
+
+<h3 id="every-day">Every day</h3>
+
+<table>
+  <thead>
+    <tr><th>Task</th><th>Command</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Stage everything</td><td><code>git add -A</code></td></tr>
+    <tr><td>Commit</td><td><code>git commit -m "message"</code></td></tr>
+    <tr><td>Stage + commit tracked</td><td><code>git commit -am "message"</code></td></tr>
+    <tr><td>Sync with remote</td><td><code>git pull --rebase</code></td></tr>
+    <tr><td>Push</td><td><code>git push</code></td></tr>
+    <tr><td>What changed</td><td><code>git status</code> / <code>git diff</code></td></tr>
+  </tbody>
+</table>
+
+<h3 id="branches">Branches</h3>
+
+<table>
+  <thead>
+    <tr><th>Task</th><th>Command</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>New branch</td><td><code>git switch -c feature-x</code></td></tr>
+    <tr><td>Switch</td><td><code>git switch main</code></td></tr>
+    <tr><td>Merge into current</td><td><code>git merge feature-x</code></td></tr>
+    <tr><td>Replay onto main</td><td><code>git rebase main</code></td></tr>
+    <tr><td>Delete merged branch</td><td><code>git branch -d feature-x</code></td></tr>
+  </tbody>
+</table>
+
+<h3 id="undo">Undoing things</h3>
+
+<table>
+  <thead>
+    <tr><th>Situation</th><th>Command</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Unstage a file</td><td><code>git restore --staged file</code></td></tr>
+    <tr><td>Discard working changes</td><td><code>git restore file</code></td></tr>
+    <tr><td>Amend last commit</td><td><code>git commit --amend</code></td></tr>
+    <tr><td>Undo last commit, keep changes</td><td><code>git reset --soft HEAD~1</code></td></tr>
+    <tr><td>Undo last commit, discard changes</td><td><code>git reset --hard HEAD~1</code></td></tr>
+    <tr><td>Recover a "lost" commit</td><td><code>git reflog</code>, then <code>git reset --hard &lt;sha&gt;</code></td></tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>Under the hood.</strong> <code>git reset --hard</code> only moves the
+  branch pointer and rewrites the working tree — the old commits are still in
+  the object database, reachable through <code>git reflog</code> until garbage
+  collection runs (roughly 90 days later by default). A "lost" commit is almost
+  never actually lost.</p>
+</blockquote>
+
+<h3 id="inspecting">Inspecting history</h3>
+
+<pre><code>git log --oneline --graph --decorate --all   # the shape of everything
+git show &lt;sha&gt;                                # one commit in full
+git blame file                               # who last touched each line
+git diff main...feature-x                     # what feature-x adds vs main
+</code></pre>

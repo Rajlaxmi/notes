@@ -1,0 +1,50 @@
+{
+  "site": {
+    "title": "Notes",
+    "description": "Reference sheets, working notes and things worth writing down once and looking up later."
+  },
+  "notes": [
+    {
+      "file": "pytorch-numpy-python-reference.md",
+      "slug": "pytorch-numpy-python-reference",
+      "title": "PyTorch, NumPy and Python Reference Sheet",
+      "date": "2026-08-27",
+      "category": "Reference",
+      "excerpt": "A quick lookup cheatsheet for ML coding.",
+      "tags": ["pytorch", "numpy", "python", "reference", "cheatsheet"],
+      "authorship": "ai-coauthored",
+      "readTime": "9 min read"
+    },
+    {
+      "file": "jax-keras-reference.md",
+      "slug": "jax-keras-reference",
+      "title": "JAX, Keras, and NumPy Reference Sheet",
+      "date": "2026-08-27",
+      "category": "Reference",
+      "excerpt": "A quick lookup cheatsheet for JAX and Keras 3 — array ops, functional transforms, explicit PRNG keys, and building/training a model, runnable on a free Colab TPU.",
+      "tags": ["jax", "keras", "numpy", "python", "reference", "cheatsheet", "tpu"],
+      "authorship": "ai-coauthored",
+      "readTime": "6 min read"
+    },
+    {
+      "file": "git-quick-reference.html",
+      "title": "Git Quick Reference",
+      "date": "2026-08-20",
+      "category": "Reference",
+      "excerpt": "The handful of Git commands that come up every day, plus the three or four that dig you out of a hole.",
+      "tags": ["git", "reference"],
+      "authorship": "self-written",
+      "readTime": "3 min read"
+    },
+    {
+      "file": "welcome.md",
+      "title": "About This Site",
+      "date": "2026-08-15",
+      "category": "Meta",
+      "excerpt": "What this is, and how to add a note.",
+      "tags": ["meta"],
+      "authorship": "self-written",
+      "readTime": "2 min read"
+    }
+  ]
+}
