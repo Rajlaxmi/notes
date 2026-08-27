@@ -25,26 +25,6 @@
       "tags": ["jax", "keras", "numpy", "python", "reference", "cheatsheet", "tpu"],
       "authorship": "ai-coauthored",
       "readTime": "6 min read"
-    },
-    {
-      "file": "git-quick-reference.html",
-      "title": "Git Quick Reference",
-      "date": "2026-08-20",
-      "category": "Reference",
-      "excerpt": "The handful of Git commands that come up every day, plus the three or four that dig you out of a hole.",
-      "tags": ["git", "reference"],
-      "authorship": "self-written",
-      "readTime": "3 min read"
-    },
-    {
-      "file": "welcome.md",
-      "title": "About This Site",
-      "date": "2026-08-15",
-      "category": "Meta",
-      "excerpt": "What this is, and how to add a note.",
-      "tags": ["meta"],
-      "authorship": "self-written",
-      "readTime": "2 min read"
     }
   ]
 }
