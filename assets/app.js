@@ -330,20 +330,10 @@ function renderIndex() {
         rows += '<li class="toc-year">' + year + '</li>';
         lastYear = year;
       }
-      var badge = authorshipLabel(n.authorship);
       rows +=
         '<li><a class="entry" href="#/note/' + encodeURIComponent(n.slug) + '">' +
-          '<div class="entry-top">' +
-            '<h3 class="entry-title">' + escapeHtml(n.title) + '</h3>' +
-            '<div class="entry-meta">' +
-              '<span class="eyebrow">' + escapeHtml(n.category) +
-                (n.date ? ' · ' + formatDate(n.date) : '') + '</span>' +
-              (badge ? '<span class="eyebrow badge">' + badge + '</span>' : '') +
-            '</div>' +
-          '</div>' +
-          (n.excerpt ? '<p class="entry-excerpt">' + escapeHtml(n.excerpt) + '</p>' : '') +
-          '<p class="entry-more"><span>' + escapeHtml(n.readTime || 'note') + '</span>' +
-            ARROW_RIGHT + '</p>' +
+          '<span class="entry-title">' + escapeHtml(n.title) + '</span>' +
+          (n.date ? '<span class="entry-date">' + escapeHtml(formatDate(n.date)) + '</span>' : '') +
         '</a></li>';
     });
     rows += '</ul></div></div>';

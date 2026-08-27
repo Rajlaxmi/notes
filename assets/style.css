@@ -228,7 +228,7 @@ body {
 
 .index-head {
   padding-top: 8rem;
-  padding-bottom: 4rem;
+  padding-bottom: 2.5rem;
 }
 
 @media (min-width: 640px) {
@@ -271,28 +271,25 @@ body {
   line-height: 1;
   letter-spacing: 0.18em;
   color: rgb(var(--faint));
-  padding: 1.75rem 0 0.75rem;
-  border-bottom: 1px solid rgb(var(--rule));
+  padding: 1.5rem 0 0.55rem;
+}
+
+.toc li:first-child.toc-year {
+  padding-top: 1rem;
 }
 
 .toc a.entry {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
   border-bottom: 1px solid rgb(var(--rule));
-  padding-block: 1.75rem;
+  padding-block: 0.5rem;
   text-decoration: none;
   color: inherit;
 }
 
-.toc .entry-top {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.25rem 1.5rem;
-}
-
 .toc .entry-title {
-  margin: 0;
   font-size: 0.848251rem;
   font-weight: 400;
   color: rgb(var(--ink));
@@ -303,45 +300,13 @@ body {
   color: rgb(var(--accent));
 }
 
-.toc .entry-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
+.toc .entry-date {
   flex-shrink: 0;
-}
-
-.toc .badge {
-  font-size: 0.55rem;
-  line-height: 1;
-}
-
-.toc .entry-excerpt {
-  margin: 0.5rem 0 0;
-  max-width: var(--measure);
-  color: rgb(var(--muted));
-}
-
-.toc .entry-more {
-  margin: 1rem 0 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.605894rem;
+  font-size: 0.580189rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: rgb(var(--faint));
-  transition: color 0.3s;
-}
-
-.toc a.entry:hover .entry-more {
-  color: rgb(var(--accent));
-}
-
-.toc .entry-more .arrow {
-  transition: transform 0.5s var(--ease-editorial);
-}
-
-.toc a.entry:hover .entry-more .arrow {
-  transform: translateX(4px);
+  font-variant-numeric: tabular-nums;
 }
 
 .back-link {
