@@ -5,15 +5,15 @@
   },
   "notes": [
     {
-      "file": "hardware-flops-reference.md",
-      "slug": "hardware-flops-reference",
-      "title": "Hardware FLOPs and Training-Compute Reference Sheet",
-      "date": "2026-08-27",
-      "category": "Reference",
-      "excerpt": "The 6ND rule, GPT-3 as the anchor number, and dense Tensor-Core throughput for A100 → Blackwell, with worked time-to-train estimates.",
-      "tags": ["hardware", "gpu", "flops", "nvidia", "training-compute", "reference", "cheatsheet"],
+      "file": "cs336-assignment-1.md",
+      "slug": "cs336-assignment-1",
+      "title": "CS 336 Assignment 1 — Building a Transformer LM",
+      "date": "2026-08-28",
+      "category": "Notes",
+      "excerpt": "Working notes on Stanford CS336 Assignment 1 — the from-scratch Transformer LM. Pairs the method from the handout (§3 onwards) with an annotated read of my model.py.",
+      "tags": ["cs336", "transformers", "pytorch", "language-models", "rope", "swiglu", "adamw", "from-scratch"],
       "authorship": "ai-coauthored",
-      "readTime": "8 min read"
+      "readTime": "12 min read"
     },
     {
       "file": "pytorch-numpy-python-reference.md",
@@ -27,12 +27,23 @@
       "readTime": "9 min read"
     },
     {
+      "file": "hardware-flops-reference.md",
+      "slug": "hardware-flops-reference",
+      "title": "Scratch | Hardware FLOPs and Training-Compute Reference Sheet",
+      "date": "2026-08-27",
+      "category": "Reference",
+      "excerpt": "The 6ND rule, GPT-3 as the anchor number, and dense Tensor-Core throughput for A100 → Blackwell, with worked time-to-train estimates.",
+      "tags": ["hardware", "gpu", "flops", "nvidia", "training-compute", "reference", "cheatsheet"],
+      "authorship": "ai-coauthored",
+      "readTime": "8 min read"
+    },
+    {
       "file": "jax-keras-reference.md",
       "slug": "jax-keras-reference",
       "title": "JAX, Keras and NumPy Reference Sheet",
       "date": "2026-08-27",
       "category": "Reference",
-      "excerpt": "A quick lookup cheatsheet for JAX and Keras 3 — array ops, functional transforms, explicit PRNG keys, and building/training a model, runnable on a free Colab TPU.",
+      "excerpt": "Scratch | A quick lookup cheatsheet for JAX and Keras 3 — array ops, functional transforms, explicit PRNG keys, and building/training a model, runnable on a free Colab TPU.",
       "tags": ["jax", "keras", "numpy", "python", "reference", "cheatsheet", "tpu"],
       "authorship": "ai-coauthored",
       "readTime": "6 min read"
@@ -40,7 +51,7 @@
     {
       "file": "ml-blogs-and-references.md",
       "slug": "ml-blogs-and-references",
-      "title": "Machine Learning Blogs and References Worth Bookmarking",
+      "title": "Scratch | Machine Learning Blogs and References Worth Bookmarking",
       "date": "2026-08-27",
       "category": "Reference",
       "excerpt": "A categorized reading list — systems deep-dives, visual explanations of the Transformer, interpretability research, post-training, and applied ML engineering.",
