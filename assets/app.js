@@ -22,7 +22,7 @@ var WORDS_PER_MINUTE = 210;
 
 var state = {
   site: { title: 'Notes', description: '' },
-  notes: [],       // sorted, newest first
+  notes: [],       // in manifest order
   loaded: false,
   error: null,
 };
@@ -152,9 +152,7 @@ function loadManifest() {
         };
       });
 
-      state.notes.sort(function (a, b) {
-        return String(b.date).localeCompare(String(a.date)) || a.title.localeCompare(b.title);
-      });
+      // Order follows content/manifest.json as written — no re-sorting.
 
       state.loaded = true;
     })

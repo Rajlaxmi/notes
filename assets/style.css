@@ -8,8 +8,9 @@
    --------------------------------------------------------------------------- */
 
 :root {
-  --paper: 255 255 255;
-  --surface: 245 245 245;
+  /* Paper carries a warm undertone rather than a pure white. */
+  --paper: 250 246 238;
+  --surface: 242 237 227;
   --ink: 17 17 17;
   --muted: 85 85 85;
   --faint: 153 153 153;
