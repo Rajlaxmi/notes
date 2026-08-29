@@ -4,14 +4,15 @@ A zero-build static site for hosting many markdown or HTML notes, with a
 table-of-contents index and note pages styled to match
 [raila.io](https://raila.io/#/writing).
 
-No framework, no bundler, no generation step. Three static files plus a vendored
-copy of [marked](https://marked.js.org/) for markdown.
+No framework, no bundler, no generation step. Three static files plus vendored
+copies of [marked](https://marked.js.org/) for markdown and IBM Plex Mono for
+code — no CDN dependency.
 
 ```
 index.html            app shell
 assets/style.css      editorial stylesheet (ported from the main site)
 assets/app.js         hash router + markdown rendering
-assets/vendor/        marked.min.js
+assets/vendor/        marked.min.js, ibm-plex-mono.css + fonts/
 content/manifest.json the list of notes + their metadata
 content/*.md, *.html  the notes themselves
 ```
