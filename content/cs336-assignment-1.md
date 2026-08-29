@@ -12,6 +12,8 @@ authorship: ai-coauthored
 
 Notes for building a standard decoder-only Transformer language model from scratch — no `torch.nn` layers, no `torch.optim`, only `nn.Parameter`, `nn.Module` as a container, and the `Optimizer` base class. The left column is the method as the handout defines it from **Section 3 onwards**; the right column is what `cs336_basics/model.py` currently does.
 
+**My code:** [github.com/Rajlaxmi/assignment1-basics](https://github.com/Rajlaxmi/assignment1-basics) — **Handout:** [cs336_assignment1_basics.pdf](content/cs336_assignment1_basics.pdf) (47 pp).
+
 ### The model in one paragraph
 
 A language model maps a batch of token IDs `(batch_size, seq_len)` to a distribution over the next token, `(batch_size, seq_len, vocab_size)`. Training minimises cross-entropy against the actual next token; generation takes the last position's distribution and samples. The architecture is: **token embedding → `num_layers` pre-norm Transformer blocks → final RMSNorm → linear LM head**. Each block is two pre-norm sub-layers with residual connections:
