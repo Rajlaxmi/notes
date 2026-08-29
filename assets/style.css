@@ -368,15 +368,22 @@ body {
 
 .note-head .tags {
   list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
   margin: 1.75rem 0 0;
   padding: 0;
+  line-height: 1.9;
 }
 
 .note-head .tags li {
+  display: inline;
   color: rgb(var(--muted));
+}
+
+/* Middot separators, matching the "·" meta line above — and not reliant
+   on flexbox `gap`, which older Safari ignores. */
+.note-head .tags li:not(:last-child)::after {
+  content: "·";
+  margin: 0 0.5em;
+  color: rgb(var(--faint));
 }
 
 .note-head hr {
