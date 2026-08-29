@@ -661,12 +661,14 @@ body {
 }
 
 .prose pre {
-  overflow-x: auto;
   border: 1px solid rgb(var(--rule));
   background: rgb(var(--surface));
   padding: 1.1rem 1.25rem;
   border-radius: 4px;
   line-height: 1.6;
+  /* Wrap long lines instead of scrolling horizontally. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .prose pre code {
@@ -674,6 +676,7 @@ body {
   padding: 0;
   color: rgb(var(--ink));
   font-size: 0.87924rem;
+  white-space: inherit;
 }
 
 .prose img {
