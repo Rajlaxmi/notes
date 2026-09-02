@@ -27,6 +27,17 @@
       "readTime": "9 min read"
     },
     {
+      "file": "tmux-reference.md",
+      "slug": "tmux-reference",
+      "title": "tmux Reference Sheet",
+      "date": "2026-09-02",
+      "category": "Reference",
+      "excerpt": "A quick lookup cheatsheet for tmux — sessions, windows, panes, copy mode, and the config knobs worth setting once.",
+      "tags": ["tmux", "terminal", "shell", "reference", "cheatsheet", "tooling"],
+      "authorship": "ai-coauthored",
+      "readTime": "7 min read"
+    },
+    {
       "file": "hardware-flops-reference.md",
       "slug": "hardware-flops-reference",
       "title": "Scratch | Hardware FLOPs and Training-Compute Reference Sheet",
