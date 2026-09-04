@@ -27,7 +27,7 @@
 
   --page: 72rem;
   --measure: 34rem;
-  --article: 48rem;
+  --article: 48.6rem;
   --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -474,6 +474,87 @@ body {
   background: rgb(var(--surface));
   padding: 0.1em 0.35em;
   border-radius: 3px;
+}
+
+/* --------------------------------------------------------------------------- */
+/* Persistent left-column table of contents                                   */
+/*                                                                            */
+/* Built by buildSideToc() from the note's inline "Contents:" list. Fixed in  */
+/* the left gutter on wide viewports; below the breakpoint it is hidden and    */
+/* the inline `.toc-inline` copy in the prose takes over.                      */
+/* --------------------------------------------------------------------------- */
+
+.note-toc {
+  display: none;
+}
+
+.note-toc-title {
+  margin: 0 0 0.85rem;
+  font-size: 0.580189rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(var(--faint));
+}
+
+.note-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.note-toc > ul > li {
+  margin-top: 0.7rem;
+}
+
+.note-toc > ul > li:first-child {
+  margin-top: 0;
+}
+
+.note-toc ul ul {
+  margin-top: 0.4rem;
+  padding-left: 0.75rem;
+}
+
+.note-toc ul ul li {
+  margin-top: 0.3rem;
+}
+
+.note-toc a {
+  color: rgb(var(--muted));
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.note-toc a:hover {
+  color: rgb(var(--ink));
+}
+
+.note-toc > ul > li > strong,
+.note-toc > ul > li > a > strong {
+  font-weight: 600;
+  color: rgb(var(--ink));
+}
+
+@media (min-width: 83rem) {
+  .note-toc {
+    display: block;
+    position: fixed;
+    z-index: 40;
+    top: 7.5rem;
+    left: max(0.75rem, calc((100vw - var(--page)) / 2 - 7rem));
+    width: 12rem;
+    max-height: calc(100vh - 10rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 0.5rem;
+    font-size: 0.66rem;
+    line-height: 1.45;
+  }
+
+  .prose .toc-inline {
+    display: none;
+  }
 }
 
 /* ---------------------------------------------------------------------------

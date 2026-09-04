@@ -411,6 +411,34 @@ function renderNote(note, bodyHtml) {
   );
 }
 
+/** Lift the note's "Contents:" list into a persistent left-column nav on wide
+    viewports. The inline copy stays in the prose as the narrow-screen fallback;
+    CSS shows exactly one of the two at any width. */
+function buildSideToc() {
+  var prose = document.querySelector('.note .prose');
+  if (!prose) return;
+
+  var line = prose.querySelector('p.toc-line');
+  var list = line && line.nextElementSibling;
+  if (!line || !list || list.tagName !== 'UL') return;
+
+  var nav = document.createElement('nav');
+  nav.className = 'note-toc';
+  nav.setAttribute('aria-label', 'Contents');
+
+  var title = document.createElement('p');
+  title.className = 'note-toc-title';
+  title.textContent = 'Contents';
+  nav.appendChild(title);
+  nav.appendChild(list.cloneNode(true));
+
+  var article = document.querySelector('.note');
+  article.insertBefore(nav, article.firstChild);
+
+  line.classList.add('toc-inline');
+  list.classList.add('toc-inline');
+}
+
 function renderMissing() {
   document.title = 'Not found — ' + state.site.title;
   return notePageShell(
@@ -474,6 +502,7 @@ function route() {
         // Guard against a fast second navigation.
         if (parseRoute().slug !== note.slug) return;
         paint(renderNote(note, body));
+        buildSideToc();
         updateProgress();
       })
       .catch(function () {
