@@ -8,9 +8,42 @@ tags: [hardware, gpu, flops, nvidia, training-compute, reference, cheatsheet]
 authorship: ai-coauthored
 ---
 
-**Contents:** [Units](#units-and-notation) · [The 6ND rule](#training-flops-the-6nd-rule) · [GPT-3](#gpt-3-the-reference-point) · [Nvidia GPUs](#nvidia-data-center-gpus) · [Time-to-train](#putting-it-together-time-to-train) · [MFU](#mfu-what-you-actually-get) · [Caveats](#caveats)
+**Contents:** [Monitoring GPUs](#monitoring-gpu-utilization-and-temperature) · [Units](#units-and-notation) · [The 6ND rule](#training-flops-the-6nd-rule) · [GPT-3](#gpt-3-the-reference-point) · [Nvidia GPUs](#nvidia-data-center-gpus) · [Time-to-train](#putting-it-together-time-to-train) · [MFU](#mfu-what-you-actually-get) · [Caveats](#caveats)
 
 A lookup sheet for reasoning about training compute: how many FLOPs a model costs, what current accelerators deliver, and how long a run takes. GPT-3 is the number everyone quotes, so it is the worked example throughout.
+
+### Monitoring GPU Utilization and Temperature
+
+`nvidia-smi` ships with the driver and is the baseline tool; `nvtop` is a `htop`-style live view that's easier to read during a training run.
+
+| Tool | Install | Use |
+| --- | --- | --- |
+| `nvidia-smi` | bundled with the NVIDIA driver | one-shot or polling snapshot: utilization, memory, temperature, power, clocks |
+| `nvtop` | `apt install nvtop` / `brew install nvtop` | interactive, per-process, live-updating (also supports AMD/Intel GPUs) |
+| `dcgm` / `dcgmi` | NVIDIA Data Center GPU Manager | fleet-level monitoring, health checks, used by DCGM Exporter → Prometheus/Grafana |
+| `gpustat` | `pip install gpustat` | compact one-line-per-GPU summary, good for scripting |
+
+```bash
+nvidia-smi                          # one-shot table: util%, mem, temp, power, clock
+nvidia-smi -l 1                     # refresh every 1s
+watch -n 1 nvidia-smi                # same idea via watch
+
+# a compact, scriptable line per GPU, polled every second
+nvidia-smi --query-gpu=index,utilization.gpu,utilization.memory,memory.used,memory.total,temperature.gpu,power.draw,clocks.sm \
+  --format=csv -l 1
+
+nvtop                                # interactive live view, arrow keys to sort/filter
+```
+
+What to look at:
+
+- **`utilization.gpu`** — % of the last sampling period the GPU had a kernel running. Sustained low utilization (<80%) during training usually means you're data-loading-bound, CPU-bound, or comms-bound, not compute-bound — see the MFU note below.
+- **`temperature.gpu`** — data-center GPUs (A100/H100/H200/B200) throttle clocks around 85–90°C junction temp to protect silicon; sustained readings above that mean airflow/cooling is the bottleneck, not the workload.
+- **`power.draw` vs board power limit** — if a GPU is pinned near its power cap but utilization is high and temps are fine, that's expected (it's compute-bound); if power draw is low while utilization is reported high, suspect a monitoring artifact or a kernel that's memory-bound rather than compute-bound.
+- **`memory.used`** — creeping memory usage across steps usually means a leak (e.g. accumulating a tensor that still has `.grad` attached) rather than legitimate activation growth.
+- **Per-process breakdown** (`nvidia-smi` bottom table, or `nvtop`'s process pane) — confirms which process owns the memory/utilization when multiple jobs share a box.
+
+For a training run, the utilization column is the quick sanity check *before* computing MFU precisely: near-100% utilization with disappointing MFU points at low arithmetic intensity (small matmuls, sequence length, batch size) rather than data stalls; utilization visibly dipping between steps points at data loading or checkpointing stalls.
 
 ### Units and Notation
 

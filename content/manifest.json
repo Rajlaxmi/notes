@@ -62,7 +62,7 @@
     {
       "file": "hardware-flops-reference.md",
       "slug": "hardware-flops-reference",
-      "title": "Scratch | Hardware FLOPs and Training-Compute Reference Sheet",
+      "title": "Hardware FLOPs and Training-Compute Reference Sheet",
       "date": "2026-08-27",
       "category": "Reference",
       "excerpt": "The 6ND rule, GPT-3 as the anchor number, and dense Tensor-Core throughput for A100 → Blackwell, with worked time-to-train estimates.",
