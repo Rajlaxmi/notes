@@ -8,7 +8,30 @@ tags: [cs336, transformers, pytorch, language-models, rope, swiglu, adamw, from-
 authorship: ai-coauthored
 ---
 
-**Contents:** [Setup](#the-model-in-one-paragraph) · [Conventions](#conventions-32) · [Linear & Embedding](#linear-and-embedding-33) · [RMSNorm](#rmsnorm-341) · [SwiGLU](#position-wise-feed-forward-swiglu-342) · [RoPE](#rotary-position-embeddings-343) · [Attention](#softmax-and-scaled-dot-product-attention-344) · [Multi-head](#causal-multi-head-self-attention-345) · [Full LM](#the-full-transformer-lm-35) · [FLOPs](#resource-accounting) · [Training §4](#training-the-model-4) · [Training loop §5](#training-loop-5) · [Generation §6](#generating-text-6) · [Status](#implementation-status-in-modelpy)
+**Contents:**
+
+- **§3 Building the model**
+  - [The model in one paragraph](#the-model-in-one-paragraph)
+  - [§3.2 Conventions](#3-2-conventions)
+  - [§3.3 Linear and Embedding](#3-3-linear-and-embedding)
+  - [§3.4.1 RMSNorm](#3-4-1-rmsnorm)
+  - [§3.4.2 Position-wise feed-forward: SwiGLU](#3-4-2-position-wise-feed-forward-swiglu)
+  - [§3.4.3 Rotary position embeddings](#3-4-3-rotary-position-embeddings)
+  - [§3.4.4 Softmax and scaled dot-product attention](#3-4-4-softmax-and-scaled-dot-product-attention)
+  - [§3.4.5 Causal multi-head self-attention](#3-4-5-causal-multi-head-self-attention)
+  - [§3.5 The full Transformer LM](#3-5-the-full-transformer-lm)
+  - [Resource accounting](#resource-accounting)
+- [**§4 Training the model**](#4-training-the-model)
+  - [§4.1 Cross-entropy loss](#4-1-cross-entropy-loss)
+  - [§4.2–4.3 SGD, then AdamW](#4-2-4-3-sgd-then-adamw)
+  - [§4.4 Cosine learning-rate schedule](#4-4-cosine-learning-rate-schedule)
+  - [§4.5 Gradient clipping](#4-5-gradient-clipping)
+- [**§5 Training loop**](#5-training-loop)
+  - [§5.1 Data loader](#5-1-data-loader)
+  - [§5.2 Checkpointing](#5-2-checkpointing)
+  - [§5.3 Training script](#5-3-training-script)
+- [**§6 Generating text**](#6-generating-text)
+- [**Implementation status in `model.py`**](#implementation-status-in-model-py)
 
 Notes for building a standard decoder-only Transformer language model from scratch — no `torch.nn` layers, no `torch.optim`, only `nn.Parameter`, `nn.Module` as a container, and the `Optimizer` base class. The left column is the method as the handout defines it from **Section 3 onwards**; the right column is what `cs336_basics/model.py` currently does.
 
@@ -34,14 +57,14 @@ Reference config used throughout the handout (GPT-2 XL shape):
 | `num_heads` | 25 |
 | `d_ff` | 4,288 (nearest multiple of 64 to `8/3 · d_model`) |
 
-### Conventions (§3.2)
+### §3.2 Conventions
 
 - **Column vectors in the math, row-major in code.** The handout writes `y = Wx`; PyTorch stores row-major, so a linear layer is `y = x @ W.T`. If you use einsum and label axes correctly this is a non-issue.
 - **Batch-like dimensions come first and are broadcast over.** Every position-wise op (RMSNorm, FFN) and the per-head attention op should tolerate arbitrary leading dims `(..., seq_len, d)`.
 - **einsum notation** (`einops.einsum` / `einx`) is recommended over `view`/`reshape`/`transpose` chains — it is self-documenting about tensor shapes.
 - The matmul primitive for cost accounting: `A @ B` with `A ∈ ℝ^{m×n}`, `B ∈ ℝ^{n×p}` costs **`2mnp` FLOPs**.
 
-### Linear and Embedding (§3.3)
+### §3.3 Linear and Embedding
 
 **Initialisation** (the handout's approximate recipe, `torch.nn.init.trunc_normal_`):
 
@@ -77,7 +100,7 @@ def forward(self, token_ids):
 
 > **Under the hood.** The spec says variance `σ² = 2/(d_in + d_out)` and truncation at `±3σ`. `model.py` passes `2/(d_in + d_out)` straight into `std=` (and into the `a`/`b` bounds), i.e. it uses the *variance* where `trunc_normal_` expects the *standard deviation*. To match the handout it should be `std = math.sqrt(2 / (in_features + out_features))` with `a=-3*std, b=3*std`. Pre-norm Transformers are famously robust to init, so tests still pass, but the sampled scale is off. Embedding init is unaffected (`σ = σ² = 1`).
 
-### RMSNorm (§3.4.1)
+### §3.4.1 RMSNorm
 
 Replaces LayerNorm. For an activation vector `a ∈ ℝ^{d_model}` with learnable gain `g`:
 
@@ -98,7 +121,7 @@ def forward(self, x):
 
 `gain` is a `d_model`-length `nn.Parameter` initialised to ones.
 
-### Position-wise feed-forward: SwiGLU (§3.4.2)
+### §3.4.2 Position-wise feed-forward: SwiGLU
 
 Modern FFN = SiLU activation + a gating branch (GLU), no bias:
 
@@ -124,7 +147,7 @@ class SwiGLU(nn.Module):
 
 > **Under the hood.** `model.py` has a `round_up_to_64` helper on the class but `__init__` takes `d_ff` as given and never calls it — the `8/3 · d_model` → multiple-of-64 rounding is left to the caller. The handout also permits `torch.sigmoid` for SiLU for numerical stability; `model.py` spells it out as `x / (1 + torch.exp(-x))`, which underflows to `0` for large negative `x` (the correct limit) but is less clean.
 
-### Rotary position embeddings (§3.4.3)
+### §3.4.3 Rotary position embeddings
 
 RoPE injects position by rotating pairs of query/key channels. For query `q^(i)` at position `i`, dimension pair `k ∈ {1, …, d/2}`:
 
@@ -162,7 +185,7 @@ class RotaryPositionalEmbedding(nn.Module):
 
 `token_positions` has shape `(..., seq_len)` and indexes the precomputed table; `cos`/`sin` then broadcast against `x`'s leading batch/head dims. The `0::2` / `1::2` split takes adjacent channel pairs, and `stack(...).flatten(-2)` re-interleaves them in the same order.
 
-### Softmax and scaled dot-product attention (§3.4.4)
+### §3.4.4 Softmax and scaled dot-product attention
 
 **Softmax** — subtract the max along the reduction dim for numerical stability (`exp` of a large value is `inf`, and `inf/inf = NaN`):
 
@@ -193,7 +216,7 @@ class ScaledDotProductAttention(nn.Module):
 
 Must handle arbitrary leading batch dims on `Q`/`K`/`V` and an optional `(seq_len, seq_len)` mask.
 
-### Causal multi-head self-attention (§3.4.5)
+### §3.4.5 Causal multi-head self-attention
 
 ```
 MultiHead(Q, K, V) = Concat(head_1, …, head_h) with head_i = Attention(Q_i, K_i, V_i)
@@ -207,7 +230,7 @@ MultiHeadSelfAttention(x) = W_O · MultiHead(W_Q x, W_K x, W_V x)
 
 `model.py` status: `MultiHeadAttention` is a bare stub (`def forward(self): pass`). Everything it depends on — projections (`Linear`), `RotaryPositionalEmbedding`, `ScaledDotProductAttention`, `softmax` — is in place.
 
-### The full Transformer LM (§3.5)
+### §3.5 The full Transformer LM
 
 Assemble a block (refer to Figure 2 in the handout):
 
@@ -229,22 +252,71 @@ Findings the handout is steering you toward: parameter count and memory (`4 · N
 
 ---
 
-## Training the model (§4)
+## §4 Training the model
 
-### Cross-entropy loss (§4.1)
+### §4.1 Cross-entropy loss
 
-For logits `o_i ∈ ℝ^{vocab_size}` at position `i` and target `x_{i+1}`:
+**The objective.** Train by minimising the negative log-likelihood of the true next token. One forward pass gives logits `o_i ∈ ℝ^{vocab_size}` at every position `i`; softmax turns each into a distribution over the vocabulary, and the model's probability for the token that actually comes next is
 
 ```
-ℓ_i = −log softmax(o_i)[x_{i+1}]
-ℓ(θ; D) = (1 / |D|m) Σ_x Σ_i ℓ_i
+p_θ(x_{i+1} | x_{1:i}) = softmax(o_i)[x_{i+1}] = exp(o_i[x_{i+1}]) / Σ_{a=1}^{vocab_size} exp(o_i[a])     (17)
 ```
 
-Implementation care: subtract the max logit for stability; **cancel the `log` and `exp` analytically** (`log softmax` = `o[target] − logsumexp(o)`), don't compose the two ops; average over all leading batch dims, which come before the vocab dim.
+The loss averages `−log p_θ` over every position of every sequence in the batch:
 
-**Perplexity** (eval metric): `perplexity = exp( (1/m) Σ ℓ_i )`.
+```
+ℓ(θ; D) = (1 / |D|m) Σ_{x∈D} Σ_{i=1}^{m} −log p_θ(x_{i+1} | x_{1:i})     (16)
+```
 
-### SGD, then AdamW (§4.2–4.3)
+Minimising it pushes probability mass onto the real continuations. A perfect prediction costs `0`; a uniform guess costs `log(vocab_size)` (≈ 10.8 for `vocab_size = 50,257`) — roughly the loss expected at initialisation.
+
+**Numerical care.** Don't compute `softmax` then `log`. Expand analytically,
+
+```
+−log softmax(o)[t] = logsumexp(o) − o[t],   logsumexp(o) = log Σ_a exp(o[a])
+```
+
+and subtract `max(o)` before exponentiating — `exp` of a large logit overflows to `inf`. The shift cancels between the two terms, so it changes nothing analytically.
+
+```python
+def run_cross_entropy(
+    inputs: Float[Tensor, "... vocab_size"],
+    targets: Int[Tensor, "..."],
+) -> Float[Tensor, ""]:
+    """Mean cross-entropy loss over all leading (batch) dimensions."""
+
+    # Shift so the largest logit is 0 — prevents exp overflow, cancels below.
+    shifted_logits = inputs - inputs.max(dim=-1, keepdim=True).values
+
+    # logsumexp over the vocab axis
+    log_normalizer = torch.log(torch.exp(shifted_logits).sum(dim=-1))
+
+    # o_i[x_{i+1}] — the target logit at each position
+    target_logits = shifted_logits.gather(
+        dim=-1,
+        index=targets.long().unsqueeze(-1),
+    ).squeeze(-1)
+
+    losses = log_normalizer - target_logits   # ℓ_i, per position
+    return losses.mean()                       # average over |D|·m
+```
+
+The `"..."` is any number of leading axes — `(batch, seq_len)` here, but `(batch, seq_len, k)` reduces identically, since the final `.mean()` flattens them all:
+
+```python
+torch.manual_seed(0)
+batch, seq_len, vocab_size = 4, 6, 100
+inputs = torch.rand(batch, seq_len, vocab_size)        # (…, vocab_size) logits
+targets = torch.randint(vocab_size, (batch, seq_len))  # (…) gold token ids
+
+run_cross_entropy(inputs, targets)   # tensor(4.5551) ≈ log(100): near-uniform, nothing learned
+```
+
+Matches `F.cross_entropy(inputs.reshape(-1, vocab_size), targets.reshape(-1))` to the digit.
+
+**Perplexity** (eval metric): `perplexity = exp( (1/m) Σ_i ℓ_i )`.
+
+### §4.2–4.3 SGD, then AdamW
 
 An `Optimizer` subclass implements `__init__(self, params, ...)` (pass defaults up to `super().__init__`) and `step(self)` (mutate `p.data` in place using `p.grad.data`; per-parameter state lives in `self.state[p]`).
 
@@ -261,7 +333,7 @@ v   ← β₂ v + (1 − β₂) g²                   # second moment
 
 Typical `(β₁, β₂) = (0.9, 0.999)`; LLMs often use `(0.9, 0.95)`. `ε ≈ 1e-8`. AdamW is stateful — two extra tensors (`m`, `v`) per parameter, which is the bulk of the `adamw_accounting` memory analysis (parameters + gradients + optimizer state + activations).
 
-### Cosine learning-rate schedule (§4.4)
+### §4.4 Cosine learning-rate schedule
 
 A schedule is a pure function of step `t`. Cosine annealing with warmup, given `α_max`, `α_min`, warmup steps `T_w`, cosine end `T_c`:
 
@@ -271,32 +343,32 @@ T_w ≤ t ≤ T_c   :  α_t = α_min + ½ (1 + cos( (t − T_w)/(T_c − T_w) ·
 t > T_c         :  α_t = α_min
 ```
 
-### Gradient clipping (§4.5)
+### §4.5 Gradient clipping
 
 After `backward()`, before `step()`: compute the global `ℓ₂` norm `‖g‖₂` over all parameter grads. If `‖g‖₂ ≥ M`, scale every grad by `M / (‖g‖₂ + ε)` with `ε = 1e-6`. Resulting norm sits just under `M`.
 
 ---
 
-## Training loop (§5)
+## §5 Training loop
 
-### Data loader (§5.1)
+### §5.1 Data loader
 
 Input: a 1-D numpy array `x` of token IDs, `batch_size`, `context_length`, device string. Output: a pair of `(batch_size, context_length)` `LongTensor`s — sampled input windows and their next-token targets — on the requested device. Any start index `1 ≤ i ≤ n − context_length` is a valid training sequence, so sampling is trivial and no padding is needed. For datasets that don't fit in RAM, load with `np.memmap` / `mmap_mode='r'` and a matching `dtype` (token IDs serialise well as `uint16` when `vocab_size < 65536`).
 
-### Checkpointing (§5.2)
+### §5.2 Checkpointing
 
 - `save_checkpoint(model, optimizer, iteration, out)` → `torch.save` a dict of `model.state_dict()`, `optimizer.state_dict()`, and `iteration` to `out` (path or file-like).
 - `load_checkpoint(src, model, optimizer)` → `torch.load`, restore both via `load_state_dict`, return the saved `iteration`.
 
 A resumable checkpoint needs model weights **and** optimizer moments **and** the step number (so the LR schedule resumes correctly).
 
-### Training script (§5.3)
+### §5.3 Training script
 
 Put it together into a configurable script: CLI-controlled model/optimizer hyperparameters, memory-mapped train/val loading, checkpoint to a user path, periodic train/val loss logging against both step count and wall-clock time.
 
 ---
 
-## Generating text (§6)
+## §6 Generating text
 
 Decode one token at a time from a prompt `x_{1…t}`:
 
