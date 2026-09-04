@@ -5,6 +5,28 @@
   },
   "notes": [
     {
+      "file": "mathjax-latex-syntax.md",
+      "slug": "mathjax-latex-syntax",
+      "title": "MathJax and LaTeX Math Syntax",
+      "date": "2026-09-02",
+      "category": "Reference",
+      "excerpt": "Loading MathJax on a page, the delimiters it looks for, re-typesetting content added by JS, and a lookup table of the LaTeX math syntax that actually comes up.",
+      "tags": ["mathjax", "latex", "math", "web", "typesetting", "reference", "cheatsheet"],
+      "authorship": "ai-coauthored",
+      "readTime": "7 min read"
+    },
+    {
+      "file": "ml-server-setup.md",
+      "slug": "ml-server-setup",
+      "title": "ML Server Setup",
+      "date": "2026-09-02",
+      "category": "Reference",
+      "excerpt": "Renting a GPU box on vast.ai and getting a training job running on it — the short version.",
+      "tags": ["vast-ai", "gpu", "cloud", "ssh", "pytorch", "training-compute", "reference", "tooling"],
+      "authorship": "ai-coauthored",
+      "readTime": "3 min read"
+    },
+    {
       "file": "cs336-assignment-1.md",
       "slug": "cs336-assignment-1",
       "title": "CS 336 Assignment 1 — Building a Transformer LM",
