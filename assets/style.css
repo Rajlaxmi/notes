@@ -1,33 +1,34 @@
 /* ---------------------------------------------------------------------------
-   Notes — editorial stylesheet
+   Notes — dark documentation stylesheet
 
-   A zero-build port of the design system from raila.io: monochrome, paper
-   white, near-black ink, grayscale everywhere, no dark mode. Type is a serif
-   for titles and Inter for body. Values mirror the Tailwind tokens used on
-   the main site so a note here reads exactly like a post there.
+   A zero-build sheet styled after the Unsloth docs (a dark GitBook theme):
+   near-black ground, near-white ink, a green accent, muted green-grey for
+   secondary text, Inter for everything (bold headings with tight tracking),
+   and softly rounded code blocks. Single mode — dark only.
    --------------------------------------------------------------------------- */
 
 :root {
-  /* Paper is a faint warm ivory (#faf9f5), matching anthropic.com;
-     surface is one soft step down in the same hue (#f5f4ee). */
-  --paper: 250 249 245;
-  --surface: 245 244 238;
-  --ink: 17 17 17;
-  --muted: 85 85 85;
-  --faint: 153 153 153;
-  --rule: 229 231 235;
-  /* Title hover highlight, matching raila.io. */
-  --accent: 154 79 46;
-  /* Deep blue used only inside article prose (headings anchors, code, rules). */
-  --prose-accent: 29 60 158;
+  /* Ground is a flat near-black (#1d1d1d); surface is one step up for code
+     and inset panels. Values are space-separated RGB for rgb(var(--x) / a). */
+  --paper: 29 29 29;
+  --surface: 33 35 34;
+  --surface-2: 41 45 43;
+  --ink: 251 255 254;
+  --muted: 178 198 188;
+  --faint: 128 143 136;
+  --rule: 50 60 55;
+  /* Primary green — links on the index, hover highlights, the progress rule. */
+  --accent: 0 201 80;
+  /* Softer green used for links inside article prose. */
+  --prose-accent: 85 180 140;
 
   --font-sans: InterVariable, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-serif: "Iowan Old Style", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, Cambria, serif;
+  --font-serif: var(--font-sans);
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
   --page: 72rem;
   --measure: 34rem;
-  --article: 48.6rem;
+  --article: 46rem;
   --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -40,6 +41,7 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  color-scheme: dark;
 }
 
 body {
@@ -47,8 +49,8 @@ body {
   background: rgb(var(--paper));
   color: rgb(var(--ink));
   font-family: var(--font-sans);
-  font-size: 12.48px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -58,11 +60,11 @@ body {
 }
 
 ::selection {
-  background-color: rgb(var(--ink) / 0.12);
+  background-color: rgb(var(--accent) / 0.28);
 }
 
 :focus-visible {
-  outline: 2px solid rgb(var(--ink));
+  outline: 2px solid rgb(var(--accent));
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -102,7 +104,7 @@ body {
 }
 
 .eyebrow {
-  font-size: 0.580189rem;
+  font-size: 0.62rem;
   line-height: 1;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -121,7 +123,7 @@ body {
 
 .link-quiet:hover,
 .link-quiet:focus-visible {
-  text-decoration-color: rgb(var(--ink));
+  text-decoration-color: rgb(var(--accent));
 }
 
 /* --------------------------------------------------------------------------- */
@@ -152,8 +154,9 @@ body {
 }
 
 .brand {
-  font-size: 0.755349rem;
-  letter-spacing: 0.02em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   color: rgb(var(--ink));
   text-decoration: none;
   transition: color 0.3s;
@@ -166,10 +169,11 @@ body {
 .brand .sep {
   color: rgb(var(--faint));
   margin-inline: 0.4em;
+  font-weight: 400;
 }
 
 .site-header nav a {
-  font-size: 0.710916rem;
+  font-size: 0.75rem;
   color: rgb(var(--muted));
   text-decoration: none;
   transition: color 0.3s;
@@ -183,6 +187,7 @@ body {
 .site-header nav a[aria-current="page"] {
   text-decoration: underline;
   text-decoration-thickness: 1px;
+  text-decoration-color: rgb(var(--accent));
   text-underline-offset: 6px;
 }
 
@@ -195,7 +200,7 @@ body {
   inset-inline: 0;
   top: 0;
   z-index: 60;
-  height: 1px;
+  height: 2px;
 }
 
 #progress span {
@@ -203,7 +208,7 @@ body {
   height: 100%;
   transform-origin: left;
   transform: scaleX(0);
-  background: rgb(var(--ink));
+  background: rgb(var(--accent));
   transition: transform 120ms linear;
 }
 
@@ -222,6 +227,7 @@ body {
   justify-content: space-between;
   gap: 0.5rem 1.5rem;
   padding-block: 2.5rem;
+  color: rgb(var(--faint));
 }
 
 /* --------------------------------------------------------------------------- */
@@ -241,18 +247,19 @@ body {
 
 .index-head h1,
 .note-head h1 {
-  font-family: var(--font-serif);
-  font-size: clamp(1.171395rem, 2.544754vw, 1.615717rem);
-  line-height: 1.1;
-  letter-spacing: -0.015em;
+  font-family: var(--font-sans);
+  font-size: clamp(1.7rem, 3.4vw, 2.15rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
   color: rgb(var(--ink));
   margin: 1.25rem 0 0;
 }
 
 .index-head .lede {
-  margin: 1.5rem 0 0;
-  max-width: 38rem;
-  font-size: 0.80786rem;
+  margin: 1.25rem 0 0;
+  max-width: 40rem;
+  font-size: 0.95rem;
   line-height: 1.55;
   color: rgb(var(--muted));
 }
@@ -269,7 +276,7 @@ body {
 }
 
 .toc-year {
-  font-size: 0.580189rem;
+  font-size: 0.62rem;
   line-height: 1;
   letter-spacing: 0.18em;
   color: rgb(var(--faint));
@@ -286,16 +293,16 @@ body {
   justify-content: space-between;
   gap: 1.5rem;
   border-bottom: 1px solid rgb(var(--rule));
-  padding-block: 0.5rem;
+  padding-block: 0.7rem;
   text-decoration: none;
   color: inherit;
 }
 
 .toc .entry-title {
-  font-size: 0.848251rem;
-  font-weight: 400;
+  font-size: 0.95rem;
+  font-weight: 500;
   color: rgb(var(--ink));
-  transition: color 0.3s;
+  transition: color 0.2s;
 }
 
 .toc a.entry:hover .entry-title {
@@ -304,7 +311,7 @@ body {
 
 .toc .entry-date {
   flex-shrink: 0;
-  font-size: 0.580189rem;
+  font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgb(var(--faint));
@@ -322,7 +329,7 @@ body {
 }
 
 .back-link:hover {
-  color: rgb(var(--ink));
+  color: rgb(var(--accent));
 }
 
 .back-link .arrow {
@@ -360,9 +367,8 @@ body {
 
 .note-head .lede {
   margin: 1.5rem 0 0;
-  font-size: 0.848251rem;
-  font-style: italic;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.55;
   color: rgb(var(--muted));
 }
 
@@ -431,12 +437,13 @@ body {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
+  color: rgb(var(--faint));
 }
 
 .note-nav .n-title {
-  font-size: 0.80786rem;
+  font-size: 0.95rem;
   color: rgb(var(--ink));
-  transition: color 0.3s;
+  transition: color 0.2s;
 }
 
 .note-nav a:hover .n-title {
@@ -458,8 +465,10 @@ body {
 }
 
 .state h1 {
-  font-family: var(--font-serif);
-  font-size: clamp(1.171395rem, 2.544754vw, 1.615717rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.7rem, 3.4vw, 2.15rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
   color: rgb(var(--ink));
   margin: 1rem 0 0;
 }
@@ -471,9 +480,9 @@ body {
 
 .state code {
   font-family: var(--font-mono);
-  background: rgb(var(--surface));
+  background: rgb(var(--surface-2));
   padding: 0.1em 0.35em;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -490,7 +499,7 @@ body {
 
 .note-toc-title {
   margin: 0 0 0.85rem;
-  font-size: 0.580189rem;
+  font-size: 0.62rem;
   line-height: 1;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -523,11 +532,11 @@ body {
 .note-toc a {
   color: rgb(var(--muted));
   text-decoration: none;
-  transition: color 0.3s;
+  transition: color 0.2s;
 }
 
 .note-toc a:hover {
-  color: rgb(var(--ink));
+  color: rgb(var(--accent));
 }
 
 .note-toc > ul > li > strong,
@@ -548,7 +557,7 @@ body {
     overflow-y: auto;
     scrollbar-width: thin;
     padding-right: 0.5rem;
-    font-size: 0.66rem;
+    font-size: 0.72rem;
     line-height: 1.45;
   }
 
@@ -559,14 +568,11 @@ body {
 
 /* ---------------------------------------------------------------------------
    Article prose
-
-   Ported line-for-line from the main site's hand-rolled prose styles so the
-   vertical rhythm matches. Applied to rendered markdown and to raw-HTML notes.
    --------------------------------------------------------------------------- */
 
 .prose {
   color: rgb(var(--ink));
-  font-size: 0.930961rem;
+  font-size: 1rem;
   line-height: 1.7;
 }
 
@@ -577,22 +583,32 @@ body {
 .prose h1,
 .prose h2 {
   color: rgb(var(--ink));
-  font-weight: 500;
-  font-size: 1.396441rem;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  font-size: 1.6rem;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
   margin-top: 2.75em;
   margin-bottom: 0;
   scroll-margin-top: 7rem;
 }
 
+.prose h2 {
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid rgb(var(--rule));
+}
+
+/* Notes in this repo top out their section headings at h3, so it carries the
+   same quiet underline the Unsloth docs give their section headers. */
 .prose h3 {
   color: rgb(var(--ink));
-  font-weight: 500;
-  font-size: 1.086121rem;
+  font-weight: 600;
+  font-size: 1.25rem;
   line-height: 1.35;
+  letter-spacing: -0.015em;
   margin-top: 2.25em;
   margin-bottom: 0;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid rgb(var(--rule));
   scroll-margin-top: 7rem;
 }
 
@@ -613,7 +629,7 @@ body {
 }
 
 .prose strong {
-  font-weight: 600;
+  font-weight: 700;
   color: rgb(var(--ink));
 }
 
@@ -622,11 +638,11 @@ body {
 }
 
 .prose blockquote {
-  border-left: 1px solid rgb(var(--prose-accent) / 0.6);
+  border-left: 2px solid rgb(var(--accent) / 0.6);
   color: rgb(var(--muted));
   padding-left: 1.5rem;
-  font-style: italic;
-  font-size: 0.982681rem;
+  font-style: normal;
+  font-size: 1em;
   margin: 2em 0;
 }
 
@@ -636,10 +652,13 @@ body {
 
 .prose blockquote.callout {
   font-style: normal;
-  border-left-color: rgb(var(--rule));
+  border-left-color: rgb(var(--accent) / 0.6);
+  background: rgb(var(--surface) / 0.6);
+  border-radius: 0 8px 8px 0;
   color: rgb(var(--muted));
-  font-size: 0.7rem;
-  line-height: 1.75;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  padding: 0.9rem 1.1rem 0.9rem 1.4rem;
 }
 
 .prose blockquote.callout strong {
@@ -679,7 +698,7 @@ body {
   top: 0.72em;
   width: 5px;
   height: 1px;
-  background-color: rgb(var(--faint));
+  background-color: rgb(var(--accent));
 }
 
 .prose ul.contains-task-list {
@@ -692,7 +711,7 @@ body {
 
 .prose li.task-list-item input[type="checkbox"] {
   margin-right: 0.55em;
-  accent-color: rgb(var(--ink));
+  accent-color: rgb(var(--accent));
 }
 
 .prose ol {
@@ -701,7 +720,7 @@ body {
 
 .prose ol > li::marker {
   color: rgb(var(--faint));
-  font-size: 1.243271em;
+  font-size: 1em;
 }
 
 .prose li + li {
@@ -709,16 +728,16 @@ body {
 }
 
 .prose :not(pre) > a {
-  color: rgb(var(--ink));
+  color: rgb(var(--prose-accent));
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
-  text-decoration-color: rgb(var(--rule));
+  text-decoration-color: rgb(var(--prose-accent) / 0.4);
   transition: text-decoration-color 0.3s;
 }
 
 .prose :not(pre) > a:hover {
-  text-decoration-color: rgb(var(--ink));
+  text-decoration-color: rgb(var(--prose-accent));
 }
 
 .prose a .ext {
@@ -730,7 +749,7 @@ body {
 
 .prose .toc-line {
   color: rgb(var(--muted));
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   line-height: 1.7;
 }
 
@@ -740,19 +759,19 @@ body {
 }
 
 .prose code {
-  background: rgb(var(--surface));
+  background: rgb(var(--surface-2));
   font-family: var(--font-mono);
-  color: rgb(var(--prose-accent));
+  color: rgb(var(--ink));
   padding: 0.1em 0.35em;
-  border-radius: 3px;
-  font-size: 1em;
+  border-radius: 4px;
+  font-size: 0.9em;
 }
 
 .prose pre {
   border: 1px solid rgb(var(--rule));
   background: rgb(var(--surface));
   padding: 1.1rem 1.25rem;
-  border-radius: 4px;
+  border-radius: 12px;
   line-height: 1.6;
   /* Wrap long lines instead of scrolling horizontally. */
   white-space: pre-wrap;
@@ -763,13 +782,13 @@ body {
   background: transparent;
   padding: 0;
   color: rgb(var(--ink));
-  font-size: 0.87924rem;
+  font-size: 0.85rem;
   white-space: inherit;
 }
 
 .prose img {
   border: 1px solid rgb(var(--rule));
-  border-radius: 3px;
+  border-radius: 8px;
   max-width: 100%;
   height: auto;
   display: block;
@@ -783,8 +802,8 @@ body {
 .prose figure figcaption {
   text-align: center;
   color: rgb(var(--muted));
-  font-size: 0.7758rem;
-  font-style: italic;
+  font-size: 0.8rem;
+  font-style: normal;
   margin-top: 0.9em;
 }
 
@@ -797,7 +816,7 @@ body {
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.827521rem;
+  font-size: 0.875rem;
 }
 
 .prose thead th {
@@ -806,7 +825,7 @@ body {
   font-weight: 400;
   color: rgb(var(--faint));
   font-family: var(--font-mono);
-  font-size: 0.6465rem;
+  font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   padding: 0 1rem 0.6rem 0;
