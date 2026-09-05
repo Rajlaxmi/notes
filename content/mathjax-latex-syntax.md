@@ -9,7 +9,15 @@ draft: false
 authorship: ai-coauthored
 ---
 
-**Contents:** [Setup](#loading-mathjax) · [Delimiters](#delimiters) · [Re-typesetting](#re-typesetting-dynamic-content) · [Syntax Table](#latex-syntax-that-comes-up) · [Environments](#multi-line-environments) · [Fonts and Accents](#fonts-and-accents) · [Gotchas](#gotchas-in-markdown)
+**Contents:**
+
+- [Loading MathJax](#loading-mathjax)
+- [Delimiters](#delimiters)
+- [Re-typesetting Dynamic Content](#re-typesetting-dynamic-content)
+- [LaTeX Syntax That Comes Up](#latex-syntax-that-comes-up)
+- [Multi-line Environments](#multi-line-environments)
+- [Fonts and Accents](#fonts-and-accents)
+- [Gotchas in Markdown](#gotchas-in-markdown)
 
 MathJax renders LaTeX (and MathML / AsciiMath) math in the browser as HTML+CSS or SVG. This is the syntax that comes up in practice plus the config knobs worth knowing. \
 Docs: [MathJax documentation](https://docs.mathjax.org/en/latest/) · [TeX/LaTeX support](https://docs.mathjax.org/en/latest/input/tex/index.html) · [supported macros](https://docs.mathjax.org/en/latest/input/tex/macros/index.html)

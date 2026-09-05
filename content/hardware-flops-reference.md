@@ -8,7 +8,16 @@ tags: [hardware, gpu, flops, nvidia, training-compute, reference, cheatsheet]
 authorship: ai-coauthored
 ---
 
-**Contents:** [Monitoring GPUs](#monitoring-gpu-utilization-and-temperature) · [Units](#units-and-notation) · [The 6ND rule](#training-flops-the-6nd-rule) · [GPT-3](#gpt-3-the-reference-point) · [Nvidia GPUs](#nvidia-data-center-gpus) · [Time-to-train](#putting-it-together-time-to-train) · [MFU](#mfu-what-you-actually-get) · [Caveats](#caveats)
+**Contents:**
+
+- [Monitoring GPU Utilization and Temperature](#monitoring-gpu-utilization-and-temperature)
+- [Units and Notation](#units-and-notation)
+- [Training FLOPs: the 6ND Rule](#training-flops-the-6nd-rule)
+- [GPT-3: the Reference Point](#gpt-3-the-reference-point)
+- [Nvidia Data-Center GPUs](#nvidia-data-center-gpus)
+- [Putting it Together: Time-to-Train](#putting-it-together-time-to-train)
+- [MFU: what you actually get](#mfu-what-you-actually-get)
+- [Caveats](#caveats)
 
 A lookup sheet for reasoning about training compute: how many FLOPs a model costs, what current accelerators deliver, and how long a run takes. GPT-3 is the number everyone quotes, so it is the worked example throughout.
 

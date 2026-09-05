@@ -9,6 +9,20 @@ draft: false
 authorship: ai-coauthored
 ---
 
+**Contents:**
+
+- [Creating Arrays](#creating-arrays)
+- [Shape and Indexing](#shape-and-indexing)
+- [Broadcasting](#broadcasting)
+- [Math and Reductions](#math-and-reductions)
+- [Reshaping and Combining](#reshaping-and-combining)
+- [Linear Algebra](#linear-algebra)
+- [Random Numbers](#random-numbers)
+- [Dtypes and Devices](#dtypes-and-devices)
+- [NumPy ⇄ JAX Interop](#numpy-jax-interop)
+- [JAX: Functional Transforms](#jax-functional-transforms)
+- [Keras 3: Building and Training a Model](#keras-3-building-and-training-a-model)
+
 Companion to the [PyTorch, NumPy, and Python reference sheet](#/note/pytorch-numpy-python-reference) — this one covers JAX and Keras 3 specifically, including the parts that don't map cleanly onto NumPy/PyTorch at all (explicit PRNG keys, immutable arrays, functional transforms).
 
 [Open the runnable version in Google Colab](https://colab.research.google.com/github/Rajlaxmi/rajlaxmi.github.io/blob/master/notebooks/jax-keras-tpu-reference.ipynb) — configured to run on a free Colab TPU, no local setup required.

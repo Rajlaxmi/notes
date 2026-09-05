@@ -9,7 +9,19 @@ draft: false
 authorship: ai-coauthored
 ---
 
-**Contents:** [Model](#the-model) · [From the Shell](#from-the-shell) · [Prefix](#the-prefix-key) · [Sessions](#sessions) · [Windows](#windows) · [Panes](#panes) · [Copy Mode](#copy-mode) · [Command Prompt](#the-command-prompt) · [Config](#config-tmux-conf) · [Scripting](#scripting-a-session) · [Gotchas](#gotchas-worth-knowing-cold)
+**Contents:**
+
+- [The Model](#the-model)
+- [From the Shell](#from-the-shell)
+- [The Prefix Key](#the-prefix-key)
+- [Sessions](#sessions)
+- [Windows](#windows)
+- [Panes](#panes)
+- [Copy Mode](#copy-mode)
+- [The Command Prompt](#the-command-prompt)
+- [Config: `~/.tmux.conf`](#config-tmux-conf)
+- [Scripting a Session](#scripting-a-session)
+- [Gotchas Worth Knowing Cold](#gotchas-worth-knowing-cold)
 
 This is a lookup sheet of the tmux commands and key bindings that come up daily when living in a terminal multiplexer. \
 Official references: [tmux(1) man page](https://man7.org/linux/man-pages/man1/tmux.1.html) · [tmux GitHub wiki](https://github.com/tmux/tmux/wiki) · [Getting Started](https://github.com/tmux/tmux/wiki/Getting-Started)

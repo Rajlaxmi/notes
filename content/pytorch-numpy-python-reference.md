@@ -9,7 +9,21 @@ draft: false
 authorship: ai-coauthored
 ---
 
-**Contents:** [Arrays/Tensors](#creating-arrays-tensors) · [Indexing](#shape-indexing-and-slicing) · [Broadcasting](#broadcasting) · [Math](#math-and-reductions) · [Reshaping](#reshaping-and-combining) · [Linear Algebra](#linear-algebra) · [Random](#random-numbers) · [Dtypes/Devices](#dtypes-and-devices) · [NumPy Interop](#numpy-pytorch-interop) · [Autograd](#autograd-pytorch-only) · [nn.Module](#building-a-model-nn-module) · [Training Loop](#training-loop-skeleton) · [Python Idioms](#python-idioms-worth-knowing-cold)
+**Contents:**
+
+- [Creating Arrays / Tensors](#creating-arrays-tensors)
+- [Shape, Indexing, and Slicing](#shape-indexing-and-slicing)
+- [Broadcasting](#broadcasting)
+- [Math and Reductions](#math-and-reductions)
+- [Reshaping and Combining](#reshaping-and-combining)
+- [Linear Algebra](#linear-algebra)
+- [Random Numbers](#random-numbers)
+- [Dtypes and Devices](#dtypes-and-devices)
+- [NumPy ⇄ PyTorch Interop](#numpy-pytorch-interop)
+- [Autograd (PyTorch-only)](#autograd-pytorch-only)
+- [Building a Model: nn.Module](#building-a-model-nn-module)
+- [Training Loop Skeleton](#training-loop-skeleton)
+- [Python Idioms Worth Knowing Cold](#python-idioms-worth-knowing-cold)
 
 This is a lookup sheet of frequent Pytorch/Numpy/Python functionalities used in ML scripts. \
 Official references: [PyTorch Cheat Sheet](https://docs.pytorch.org/tutorials/beginner/ptcheat.html) · [PyTorch documentation](https://docs.pytorch.org/docs/stable/index.html) · [NumPy quickstart](https://numpy.org/doc/stable/user/quickstart.html)

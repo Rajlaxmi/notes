@@ -9,6 +9,15 @@ draft: false
 authorship: ai-coauthored
 ---
 
+**Contents:**
+
+- [Systems, Performance, and Efficiency](#systems-performance-and-efficiency)
+- [Foundations and Visual Explanations](#foundations-and-visual-explanations)
+- [Research Deep Dives and Interpretability](#research-deep-dives-and-interpretability)
+- [Post-Training, Alignment, and RLHF](#post-training-alignment-and-rlhf)
+- [Applied ML Engineering](#applied-ml-engineering)
+- [Training Practice and Newsletters](#training-practice-and-newsletters)
+
 Not a ranked "best of" list — a categorized set of blogs and long-form references that keep coming up as genuinely worth the time, grouped by what they're actually useful for.
 
 ### Systems, Performance, and Efficiency

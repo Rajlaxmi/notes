@@ -9,6 +9,15 @@ draft: false
 authorship: ai-coauthored
 ---
 
+**Contents:**
+
+- [vast.ai server setup](#vast-ai-server-setup)
+- [SSH into a running instance](#ssh-into-a-running-instance)
+- [Use it](#use-it)
+- [VS Code on the box](#vs-code-on-the-box)
+- [Teardown](#teardown)
+- [Gotchas](#gotchas)
+
 Standing up a single-GPU box on [vast.ai](https://vast.ai) for training work. \
 References: [docs](https://docs.vast.ai/) · [CLI](https://docs.vast.ai/cli) · [console](https://cloud.vast.ai/)
 
