@@ -8,7 +8,7 @@ No framework, no bundler, no generation step. Three static files plus vendored
 copies of [marked](https://marked.js.org/) for markdown, [KaTeX](https://katex.org/)
 for `$$…$$` math, and IBM Plex Mono for code — no CDN dependency.
 
-```
+```text
 index.html            app shell
 assets/style.css      editorial stylesheet (ported from the main site)
 assets/app.js         hash router + markdown rendering
@@ -22,17 +22,17 @@ content/*.md, *.html  the notes themselves
 1. Drop a `.md` or `.html` file into `content/`.
 2. Add an entry to `content/manifest.json`:
 
-   ```json
-   {
-     "file": "my-note.md",
-     "title": "My Note",
-     "date": "2026-08-27",
-     "category": "Reference",
-     "excerpt": "One or two sentences for the index.",
-     "tags": ["example"],
-     "authorship": "self-written"
-   }
-   ```
+```json
+{
+  "file": "my-note.md",
+  "title": "My Note",
+  "date": "2026-08-27",
+  "category": "Reference",
+  "excerpt": "One or two sentences for the index.",
+  "tags": ["example"],
+  "authorship": "self-written"
+}
+```
 
 Only `file` and `title` are required; `readTime` shows on the index when set,
 and is estimated from the body otherwise. Markdown notes may also carry `---`
@@ -45,7 +45,7 @@ manifest omits.
 It must be served over HTTP (the app `fetch`es the manifest and notes), not
 opened as a `file://` URL.
 
-```
+```bash
 cd notes
 python3 -m http.server 8000
 # open http://localhost:8000/
