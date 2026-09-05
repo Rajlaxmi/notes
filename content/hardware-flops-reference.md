@@ -21,7 +21,7 @@ authorship: ai-coauthored
 
 A lookup sheet for reasoning about training compute: how many FLOPs a model costs, what current accelerators deliver, and how long a run takes. GPT-3 is the number everyone quotes, so it is the worked example throughout.
 
-### Monitoring GPU Utilization and Temperature
+## Monitoring GPU Utilization and Temperature
 
 `nvidia-smi` ships with the driver and is the baseline tool; `nvtop` is a `htop`-style live view that's easier to read during a training run.
 
@@ -54,7 +54,7 @@ What to look at:
 
 For a training run, the utilization column is the quick sanity check *before* computing MFU precisely: near-100% utilization with disappointing MFU points at low arithmetic intensity (small matmuls, sequence length, batch size) rather than data stalls; utilization visibly dipping between steps points at data loading or checkpointing stalls.
 
-### Units and Notation
+## Units and Notation
 
 | Symbol | Meaning |
 | --- | --- |
@@ -67,7 +67,7 @@ For a training run, the utilization column is the quick sanity check *before* co
 
 One accelerator held at **1 PFLOP/s for a day = 8.64 × 10¹⁹ FLOP**. So a 10²⁴-FLOP run is ~11,600 PFLOP/s·days of work; a 10²⁵-FLOP frontier run is ~30 GPT-3s.
 
-### Training FLOPs: the 6ND Rule
+## Training FLOPs: the 6ND Rule
 
 *Source: Kaplan et al., [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) (2020), §2.1; also used in [Chinchilla](https://arxiv.org/abs/2203.15556)*
 
@@ -86,7 +86,7 @@ So 2 + 4 = **6 FLOPs per parameter per token**. This ignores attention's sequenc
 
 > **Under the hood.** The "2" is because a matmul producing `M·K` outputs over a shared inner dimension `P` does `M·K·P` multiply-adds, and each multiply-add is one `*` plus one `+`. A weight is hit once in the forward matmul (2 FLOPs/token) and appears in *two* backward matmuls — `dL/dx = dL/dy · Wᵀ` and `dL/dW = xᵀ · dL/dy` — for 4 more. Activation recomputation ("gradient checkpointing") adds roughly another 1–2ND: that surplus is counted in *hardware* FLOPs (HFU), not *model* FLOPs (MFU).
 
-### GPT-3: the Reference Point
+## GPT-3: the Reference Point
 
 *Source: Brown et al., [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165) (2020), Table D.1*
 
@@ -100,7 +100,7 @@ So 2 + 4 = **6 FLOPs per parameter per token**. This ignores attention's sequenc
 
 **3.14e23** is the number to memorise. Everything since is measured in GPT-3s.
 
-### Nvidia Data-Center GPUs
+## Nvidia Data-Center GPUs
 
 *Sources: NVIDIA [A100](https://www.nvidia.com/en-us/data-center/a100/), [H100](https://www.nvidia.com/en-us/data-center/h100/), [H200](https://www.nvidia.com/en-us/data-center/h200/) and [Blackwell](https://www.nvidia.com/en-us/data-center/dgx-b200/) datasheets. All figures are **dense** Tensor-Core throughput at SXM board power — the "with sparsity" marketing numbers are exactly 2×.*
 
@@ -122,7 +122,7 @@ So 2 + 4 = **6 FLOPs per parameter per token**. This ignores attention's sequenc
 - Add ~10–20% for the **GB200** superchip (higher sustained clocks in the NVL72 rack), and roughly another ~1.5× for **B300 / Blackwell Ultra**.
 - PCIe cards run ~20–30% below the SXM numbers on power-capped clocks.
 
-### Putting it Together: Time-to-Train
+## Putting it Together: Time-to-Train
 
 $$
 \text{wall\_clock} \approx \frac{C}{n_{\text{gpus}} \cdot \text{peak\_FLOP/s} \cdot \text{MFU}}
@@ -151,7 +151,7 @@ print(round(days, 1))   # ~9.0 days of wall clock
 
 Illustrative only — real runs lose time to restarts, data stalls and eval, and the original GPT-3 run predates every part in the table.
 
-### MFU: what you actually get
+## MFU: what you actually get
 
 *Source: Chowdhery et al., [PaLM](https://arxiv.org/abs/2204.02311) (2022), §5; Narayanan et al., [Megatron-LM](https://arxiv.org/abs/2104.04473) (2021)*
 
@@ -166,7 +166,7 @@ Illustrative only — real runs lose time to restarts, data stalls and eval, and
 
 Rules of thumb: assume **40%** for an estimate, treat **>55%** as excellent, and read **<25%** as "bottlenecked on comms, data loading, kernel launch or load imbalance — not on math."
 
-### Caveats
+## Caveats
 
 - **FLOP ≠ FLOP/s.** Cost is a count (3.14e23); hardware is a rate. Never compare the two without a time.
 - **Dense vs 2:4 sparse.** Vendor slides usually show the sparse figure; halve it for real dense training.

@@ -22,7 +22,7 @@ authorship: ai-coauthored
 MathJax renders LaTeX (and MathML / AsciiMath) math in the browser as HTML+CSS or SVG. This is the syntax that comes up in practice plus the config knobs worth knowing. \
 Docs: [MathJax documentation](https://docs.mathjax.org/en/latest/) · [TeX/LaTeX support](https://docs.mathjax.org/en/latest/input/tex/index.html) · [supported macros](https://docs.mathjax.org/en/latest/input/tex/macros/index.html)
 
-### Loading MathJax
+## Loading MathJax
 
 Configure *before* loading the script; load the combined component for TeX input + CHTML output:
 
@@ -48,7 +48,7 @@ Configure *before* loading the script; load the combined component for TeX input
 
 Swap `tex-mml-chtml.js` for `tex-chtml.js` (no MathML input) or `tex-svg.js` (SVG output, better for copy-paste into other docs). v3 is a full rewrite of v2 — old `MathJax.Hub.*` calls do not exist.
 
-### Delimiters
+## Delimiters
 
 | Wrap | Renders as | Notes |
 | --- | --- | --- |
@@ -60,7 +60,7 @@ Swap `tex-mml-chtml.js` for `tex-chtml.js` (no MathML input) or `tex-svg.js` (SV
 
 Inside `<pre>` and `<code>` nothing is processed, by default — see `skipHtmlTags`.
 
-### Re-typesetting Dynamic Content
+## Re-typesetting Dynamic Content
 
 MathJax typesets once on load. Content you inject afterwards (a hash router, `innerHTML`, a fetched note) must be typeset explicitly:
 
@@ -74,7 +74,7 @@ MathJax.typesetClear([containerEl]);
 
 `typesetPromise()` with no argument re-scans the whole page. Queue it after your DOM write, not before.
 
-### LaTeX Syntax That Comes Up
+## LaTeX Syntax That Comes Up
 
 | Want | Write | Result |
 | --- | --- | --- |
@@ -100,7 +100,7 @@ MathJax.typesetClear([containerEl]);
 | Color | `\color{red}{x}`, `{\color{blue} x + y}` | needs the `color` extension (in the combined build) |
 | Boxed | `\boxed{E = mc^2}` | |
 
-### Multi-line Environments
+## Multi-line Environments
 
 All of these go **inside** display delimiters (`\[ … \]` or `$$ … $$`), except `equation`/`align` which bring their own display mode.
 
@@ -139,7 +139,7 @@ f(x) = \begin{cases}
 
 Suppress one line's number in `align` with `\nonumber` or `\notag`; label with `\label{eq:x}` and reference via `\eqref{eq:x}` (needs `tags: 'ams'`).
 
-### Fonts and Accents
+## Fonts and Accents
 
 | Macro | Use for |
 | --- | --- |
@@ -163,7 +163,7 @@ tex: {
 }
 ```
 
-### Gotchas in Markdown
+## Gotchas in Markdown
 
 - **`_` and `*` are Markdown syntax.** `x_i` and `a_b_c` outside math delimiters get eaten as emphasis; even inside, some renderers pre-process. Prefer `\( … \)`, and if using `$…$`, keep the math on one line with no stray `*`.
 - **Backslashes double up.** In a JS string, HTML attribute, or JSON, `\alpha` must be `\\alpha`; `\\` (newline) becomes `\\\\`.

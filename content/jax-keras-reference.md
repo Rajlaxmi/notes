@@ -29,7 +29,7 @@ Companion to the [PyTorch, NumPy, and Python reference sheet](#/note/pytorch-num
 
 Official references: [JAX documentation](https://docs.jax.dev/en/latest/) · [Keras documentation](https://keras.io/getting_started/) · [NumPy quickstart](https://numpy.org/doc/stable/user/quickstart.html)
 
-### Creating Arrays
+## Creating Arrays
 
 | Operation | NumPy | JAX | Keras (`keras.ops`) |
 | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Official references: [JAX documentation](https://docs.jax.dev/en/latest/) · [Ke
 | Same shape as another | `np.zeros_like(a)` | `jnp.zeros_like(a)` | `keras.ops.zeros_like(x)` |
 | Uninitialized | `np.empty((2, 3))` | — (no meaningful uninitialized alloc; use `jnp.zeros`) | `keras.ops.empty((2, 3))` |
 
-### Shape and Indexing
+## Shape and Indexing
 
 | Operation | NumPy | JAX | Keras (`keras.ops`) |
 | --- | --- | --- | --- |
@@ -53,7 +53,7 @@ Official references: [JAX documentation](https://docs.jax.dev/en/latest/) · [Ke
 
 **JAX arrays are immutable.** `a[0] = 99` raises an error — there's no in-place indexed assignment. Instead, `x.at[idx].set(value)` (also `.add()`, `.multiply()`, `.max()`, ...) returns a *new* array with that update applied; `x` itself is untouched. Inside a `jax.jit`-compiled function, XLA can usually turn this back into a true in-place buffer update, so it's not as wasteful as it looks.
 
-### Broadcasting
+## Broadcasting
 
 Same rule as NumPy, aligned from the trailing dimension: two axes are compatible if they're equal, or one of them is `1`.
 
@@ -63,7 +63,7 @@ x2 = jnp.arange(4).reshape(1, 4)   # shape (1, 4)
 x1 + x2                             # shape (3, 4)
 ```
 
-### Math and Reductions
+## Math and Reductions
 
 | Operation | NumPy | JAX | Keras (`keras.ops`) |
 | --- | --- | --- | --- |
@@ -79,7 +79,7 @@ x1 + x2                             # shape (3, 4)
 
 Both `jnp.max`/`jnp.sort` and their Keras equivalents follow NumPy's convention of returning values only — use `jnp.argmax`/`jnp.argsort` (or the Keras equivalents) separately for indices, unlike PyTorch's `.max(dim=...)`, which returns a `(values, indices)` tuple.
 
-### Reshaping and Combining
+## Reshaping and Combining
 
 | Operation | NumPy | JAX | Keras (`keras.ops`) |
 | --- | --- | --- | --- |
@@ -91,7 +91,7 @@ Both `jnp.max`/`jnp.sort` and their Keras equivalents follow NumPy's convention 
 
 This distinction doesn't come up for JAX or Keras the way it does for PyTorch's `view` vs `reshape` — there's no "shares storage with the original" concept to worry about once arrays are immutable.
 
-### Linear Algebra
+## Linear Algebra
 
 | Operation | NumPy | JAX | Keras (`keras.ops`) |
 | --- | --- | --- | --- |
@@ -102,7 +102,7 @@ This distinction doesn't come up for JAX or Keras the way it does for PyTorch's 
 | Norm | `np.linalg.norm(a)` | `jnp.linalg.norm(x)` | `keras.ops.norm(x)` |
 | Solve `Ax = b` | `np.linalg.solve(A, b)` | `jnp.linalg.solve(A, b)` | `keras.ops.solve(A, b)` |
 
-### Random Numbers
+## Random Numbers
 
 | Operation | NumPy | JAX | Keras |
 | --- | --- | --- | --- |
@@ -121,7 +121,7 @@ x = jax.random.normal(subkey, (2, 3))
 
 Keras's `keras.random` API is stateless in a similar spirit (same `seed` in → same values out), but manages the key/counter bookkeeping for you via an internal `SeedGenerator` rather than requiring you to split keys by hand.
 
-### Dtypes and Devices
+## Dtypes and Devices
 
 | Operation | NumPy | JAX | Keras |
 | --- | --- | --- | --- |
@@ -133,7 +133,7 @@ Keras's `keras.random` API is stateless in a similar spirit (same `seed` in → 
 
 The default-dtype mismatch trips people up constantly: `np.array([1.0, 2.0])` is `float64`, but `jnp.array([1.0, 2.0])` is `float32`. Converting a NumPy `float64` array straight into a model expecting `float32` weights is a common source of a silent dtype-promotion slowdown.
 
-### NumPy ⇄ JAX Interop
+## NumPy ⇄ JAX Interop
 
 ```python
 # NumPy -> JAX (always copies — JAX arrays are immutable, so there's no memory-sharing story)
@@ -143,7 +143,7 @@ x = jnp.array(a)
 a = jax.device_get(x)  # or np.asarray(x)
 ```
 
-### JAX: Functional Transforms
+## JAX: Functional Transforms
 
 JAX takes a completely different shape to autograd than PyTorch: transforms are plain functions that take a function and return a new one — there's no `.backward()` call and no persistent graph object to manage.
 
@@ -166,7 +166,7 @@ batched_f(jnp.stack([x, x]))  # f applied independently to each row
 
 They also compose freely — `jax.jit(jax.grad(f))` is completely ordinary JAX code, not a special case. This is the core reason JAX code often reads as "more functional" than PyTorch: state (parameters, RNG keys) is passed explicitly as arguments rather than living on `self`.
 
-### Keras 3: Building and Training a Model
+## Keras 3: Building and Training a Model
 
 ```python
 import os

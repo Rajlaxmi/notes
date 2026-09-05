@@ -31,7 +31,7 @@ Official references: [PyTorch Cheat Sheet](https://docs.pytorch.org/tutorials/be
 [Open the runnable version in Google Colab](https://colab.research.google.com/github/Rajlaxmi/rajlaxmi.github.io/blob/master/notebooks/pytorch-numpy-python-reference.ipynb) to try any of the snippets below live, no local setup required.
 
 
-### Creating Arrays / Tensors
+## Creating Arrays / Tensors
 
 *PyTorch docs: [Creation Ops](https://docs.pytorch.org/docs/stable/torch.html)*
 
@@ -48,7 +48,7 @@ Official references: [PyTorch Cheat Sheet](https://docs.pytorch.org/tutorials/be
 
 Note the shape argument convention differs: NumPy wants a single tuple (`np.zeros((2, 3))`), PyTorch accepts either unpacked ints (`torch.zeros(2, 3)`) or a tuple.
 
-### Shape, Indexing, and Slicing
+## Shape, Indexing, and Slicing
 
 *PyTorch docs: [Indexing, Slicing, Joining, Mutating Ops](https://docs.pytorch.org/docs/stable/torch.html)*
 
@@ -64,7 +64,7 @@ Note the shape argument convention differs: NumPy wants a single tuple (`np.zero
 | Add a new axis | `a[:, None]` or `np.expand_dims(a, 1)` | `t[:, None]` or `t.unsqueeze(1)` |
 | Drop size-1 axes | `np.squeeze(a)` | `t.squeeze()` |
 
-### Broadcasting
+## Broadcasting
 
 *PyTorch docs: [Broadcasting semantics](https://docs.pytorch.org/docs/stable/notes/broadcasting.html)*
 
@@ -106,7 +106,7 @@ t1 + t2                           # shape (3, 4), identical rule
 >
 > So the mental model above, "stretch size-1 dims to match," is exactly right: both implementations just realize that stretch as a stride-0 view rather than a memory copy.
 
-### Math and Reductions
+## Math and Reductions
 
 *PyTorch docs: [Math Operations](https://docs.pytorch.org/docs/stable/torch.html)*
 
@@ -128,7 +128,7 @@ t1 + t2                           # shape (3, 4), identical rule
 
 `t.max(dim=1)` returning a named tuple `(values, indices)` instead of just the max — same for `.min()`, `.sort()`, `.topk()` — is the single most common source of "why is this a tuple" confusion coming from NumPy, where `.max(axis=...)` returns just the values.
 
-### Reshaping and Combining
+## Reshaping and Combining
 
 *PyTorch docs: [Indexing, Slicing, Joining, Mutating Ops](https://docs.pytorch.org/docs/stable/torch.html)*
 
@@ -145,7 +145,7 @@ t1 + t2                           # shape (3, 4), identical rule
 
 `view` requires contiguous memory and shares storage with the original tensor; `reshape` works either way, copying only when it has to. Default to `reshape` unless you specifically need the no-copy guarantee.
 
-### Linear Algebra
+## Linear Algebra
 
 *PyTorch docs: [torch.linalg](https://docs.pytorch.org/docs/stable/linalg.html)*
 
@@ -159,7 +159,7 @@ t1 + t2                           # shape (3, 4), identical rule
 | Norm | `np.linalg.norm(a)` | `torch.linalg.norm(t)` |
 | Solve `Ax = b` | `np.linalg.solve(A, b)` | `torch.linalg.solve(A, b)` |
 
-### Random Numbers
+## Random Numbers
 
 *PyTorch docs: [Random Sampling](https://docs.pytorch.org/docs/stable/torch.html)*
 
@@ -174,7 +174,7 @@ t1 + t2                           # shape (3, 4), identical rule
 
 Prefer `np.random.default_rng()` over the legacy `np.random.seed()` global-state API in any new code — it's the same reasoning that favors an explicit `torch.Generator` over relying on the single global RNG state when reproducibility across multiple independent streams matters.
 
-### Dtypes and Devices
+## Dtypes and Devices
 
 *PyTorch docs: [Tensor Attributes](https://docs.pytorch.org/docs/stable/tensor_attributes.html)*
 
@@ -189,7 +189,7 @@ Prefer `np.random.default_rng()` over the legacy `np.random.seed()` global-state
 
 The default-dtype mismatch trips people up constantly: `np.array([1.0, 2.0])` is `float64`, but `torch.tensor([1.0, 2.0])` is `float32`. Converting a NumPy `float64` array straight into a model expecting `float32` weights is a very common source of a silent dtype-promotion slowdown or an explicit dtype-mismatch error.
 
-### NumPy ⇄ PyTorch Interop
+## NumPy ⇄ PyTorch Interop
 
 *PyTorch tutorial: [Bridge to NumPy](https://docs.pytorch.org/tutorials/beginner/blitz/tensor_tutorial.html)*
 
@@ -204,7 +204,7 @@ a = t.detach().cpu().numpy()  # safe general-purpose version
 
 `t.detach().cpu().numpy()` is the version to reach for by default: `.detach()` drops it from the autograd graph (skip if the tensor doesn't require grad), `.cpu()` is a no-op if it's already on CPU and otherwise necessary since NumPy has no concept of a GPU tensor, and only then can `.numpy()` succeed.
 
-### Autograd (PyTorch-only)
+## Autograd (PyTorch-only)
 
 *PyTorch docs: [Autograd mechanics](https://docs.pytorch.org/docs/stable/notes/autograd.html) · [A Gentle Introduction to torch.autograd](https://docs.pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html)*
 
@@ -223,7 +223,7 @@ x.grad.zero_()      # gradients accumulate by default — zero before the next b
 
 Three things that catch people every time: gradients **accumulate** into `.grad` across multiple `backward()` calls unless you zero them; `backward()` only works on a scalar output (call `.sum()` or `.mean()` first, or pass a `gradient=` tensor matching the output's shape); and any in-place op on a tensor that's part of the graph you still need for backward raises a `RuntimeError` rather than silently corrupting gradients.
 
-### Building a Model: nn.Module
+## Building a Model: nn.Module
 
 *PyTorch docs: [torch.nn](https://docs.pytorch.org/docs/stable/nn.html) · [nn.Module](https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html)*
 
@@ -247,7 +247,7 @@ model = MLP(784, 128, 10)
 
 Every submodule assigned as an attribute (`self.net = ...`) is auto-registered — `model.parameters()` walks the whole tree and finds them, no manual bookkeeping needed. `model(x)` is the call to make (not `model.forward(x)` directly) — the `__call__` path is what runs registered hooks.
 
-### Training Loop Skeleton
+## Training Loop Skeleton
 
 *PyTorch docs: [torch.optim](https://docs.pytorch.org/docs/stable/optim.html)*
 
@@ -266,7 +266,7 @@ for x, y in dataloader:
 
 `optimizer.zero_grad()` before the forward pass (not just before `backward()`) is the convention to default to. At eval time, wrap the forward pass in `with torch.no_grad():` and call `model.eval()` first — the latter matters specifically for layers that behave differently in train vs. eval (`Dropout`, `BatchNorm`), and is easy to forget since nothing errors if you don't.
 
-### Python Idioms Worth Knowing Cold
+## Python Idioms Worth Knowing Cold
 
 *Style guides: [PEP 8](https://peps.python.org/pep-0008/) · [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)*
 
