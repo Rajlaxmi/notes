@@ -91,6 +91,7 @@ function unquote(v) {
 function estimateReadTime(markdown) {
   var plain = markdown
     .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/^\$\$$[\s\S]*?^\$\$$/gm, ' ')
     .replace(/`[^`]*`/g, ' ')
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
@@ -187,11 +188,76 @@ function noteBySlug(slug) {
    -------------------------------------------------------------------------- */
 
 function renderMarkdown(md) {
-  var html = window.marked.parse(md, { gfm: true, breaks: false, headerIds: false, mangle: false });
+  var math = [];
+  var protectedMd = extractMathBlocks(md, math);
+  var html = window.marked.parse(protectedMd, { gfm: true, breaks: false, headerIds: false, mangle: false });
+  html = renderMathPlaceholders(html, math);
   var wrap = document.createElement('div');
   wrap.innerHTML = html;
   enhance(wrap);
   return wrap.innerHTML;
+}
+
+/** Pull `$$`-delimited display-math blocks out of the markdown before `marked`
+    touches them (so `_`, `*`, `\` and `|` inside LaTeX survive), leaving a
+    placeholder token. Only `$$` alone on its own line counts as a delimiter;
+    `$$` inside fenced code or inline `` `…` `` spans is left untouched. */
+function extractMathBlocks(md, math) {
+  var lines = md.split('\n');
+  var out = [];
+  var inFence = false;
+  var inMath = false;
+  var buf = [];
+  var DELIM = /^\s*\$\$\s*$/;
+  var FENCE = /^\s*(```+|~~~+)/;
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+
+    if (!inMath && FENCE.test(line)) {
+      inFence = !inFence;
+      out.push(line);
+      continue;
+    }
+    if (inFence) { out.push(line); continue; }
+
+    if (DELIM.test(line)) {
+      if (!inMath) {
+        inMath = true;
+        buf = [];
+      } else {
+        inMath = false;
+        out.push('@@MATHBLOCK' + (math.push(buf.join('\n')) - 1) + '@@');
+      }
+      continue;
+    }
+
+    if (inMath) buf.push(line);
+    else out.push(line);
+  }
+
+  // Unterminated `$$` — put the text back verbatim rather than swallow it.
+  if (inMath) {
+    out.push('$$');
+    for (var j = 0; j < buf.length; j++) out.push(buf[j]);
+  }
+  return out.join('\n');
+}
+
+function renderMathPlaceholders(html, math) {
+  if (!math.length) return html;
+  var katex = window.katex;
+  return html.replace(/(?:<p>)?@@MATHBLOCK(\d+)@@(?:<\/p>)?/g, function (_, i) {
+    var tex = math[+i] || '';
+    if (katex) {
+      try {
+        return katex.renderToString(tex, { displayMode: true, throwOnError: false, strict: false });
+      } catch (e) {
+        /* fall through to the plain-text fallback */
+      }
+    }
+    return '<pre class="math-fallback">' + escapeHtml(tex) + '</pre>';
+  });
 }
 
 function renderRawHtml(raw) {

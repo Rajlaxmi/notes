@@ -853,3 +853,32 @@ body {
   overflow-x: auto;
   padding-inline: 1.5rem;
 }
+
+/* ---------------------------------------------------------------------------
+   Math (KaTeX)
+
+   Display blocks come from `$$…$$` in the markdown, rendered at load time by
+   katex.renderToString(). KaTeX glyphs inherit `currentColor`, so they read
+   as body ink on the dark ground with no extra rules; these just handle
+   rhythm and letting a wide equation scroll rather than blow out the column.
+   --------------------------------------------------------------------------- */
+
+.prose .katex-display {
+  margin: 1.75em 0;
+  padding: 0.25rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.prose .katex {
+  font-size: 1.05em;
+}
+
+.prose .katex-display > .katex {
+  text-align: left;
+}
+
+/* Shown only if KaTeX fails to load or a formula doesn't parse. */
+.prose .math-fallback {
+  color: rgb(var(--muted));
+}

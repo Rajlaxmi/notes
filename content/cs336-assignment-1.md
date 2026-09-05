@@ -41,10 +41,12 @@ Notes for building a standard decoder-only Transformer language model from scrat
 
 A language model maps a batch of token IDs `(batch_size, seq_len)` to a distribution over the next token, `(batch_size, seq_len, vocab_size)`. Training minimises cross-entropy against the actual next token; generation takes the last position's distribution and samples. The architecture is: **token embedding → `num_layers` pre-norm Transformer blocks → final RMSNorm → linear LM head**. Each block is two pre-norm sub-layers with residual connections:
 
-```
-y = x + MultiHeadSelfAttention(RMSNorm(x))
-z = y + SwiGLU(RMSNorm(y))
-```
+$$
+\begin{aligned}
+y &= x + \operatorname{MultiHeadSelfAttention}(\operatorname{RMSNorm}(x)) \\
+z &= y + \operatorname{SwiGLU}(\operatorname{RMSNorm}(y))
+\end{aligned}
+$$
 
 Reference config used throughout the handout (GPT-2 XL shape):
 
@@ -104,9 +106,11 @@ def forward(self, token_ids):
 
 Replaces LayerNorm. For an activation vector `a ∈ ℝ^{d_model}` with learnable gain `g`:
 
-```
-RMSNorm(a)_i = a_i / RMS(a) · g_i        RMS(a) = sqrt( (1/d_model) Σ a_i²  +  ε )
-```
+$$
+\operatorname{RMSNorm}(a)_i = \frac{a_i}{\operatorname{RMS}(a)}\, g_i
+\qquad
+\operatorname{RMS}(a) = \sqrt{\frac{1}{d_{\text{model}}} \sum_{i=1}^{d_{\text{model}}} a_i^2 \; + \; \varepsilon}
+$$
 
 `ε` is fixed at `1e-5` and lives *inside* the square root. Upcast to `float32` before squaring to avoid overflow, then downcast the result to the input dtype. `model.py` follows this precisely:
 
@@ -125,10 +129,12 @@ def forward(self, x):
 
 Modern FFN = SiLU activation + a gating branch (GLU), no bias:
 
-```
-SiLU(x)   = x · σ(x) = x / (1 + e^{−x})
-FFN(x)    = SwiGLU(x, W1, W2, W3) = W2 ( SiLU(W1 x) ⊙ W3 x )
-```
+$$
+\begin{aligned}
+\operatorname{SiLU}(x) &= x \cdot \sigma(x) = \frac{x}{1 + e^{-x}} \\
+\operatorname{FFN}(x) &= \operatorname{SwiGLU}(x, W_1, W_2, W_3) = W_2\big(\operatorname{SiLU}(W_1 x) \odot W_3 x\big)
+\end{aligned}
+$$
 
 Shapes: `W1, W3 ∈ ℝ^{d_ff × d_model}`, `W2 ∈ ℝ^{d_model × d_ff}`. Canonically `d_ff = 8/3 · d_model`, rounded to a multiple of 64 for hardware efficiency.
 
@@ -151,12 +157,11 @@ class SwiGLU(nn.Module):
 
 RoPE injects position by rotating pairs of query/key channels. For query `q^(i)` at position `i`, dimension pair `k ∈ {1, …, d/2}`:
 
-```
-θ_{i,k} = i / Θ^{(2k−2)/d}
-
-R_k^i = [ cos θ_{i,k}   −sin θ_{i,k} ]
-        [ sin θ_{i,k}    cos θ_{i,k} ]
-```
+$$
+\theta_{i,k} = \frac{i}{\Theta^{(2k-2)/d}}
+\qquad
+R_k^i = \begin{bmatrix} \cos\theta_{i,k} & -\sin\theta_{i,k} \\ \sin\theta_{i,k} & \phantom{-}\cos\theta_{i,k} \end{bmatrix}
+$$
 
 The full `R^i` is block-diagonal with those 2×2 blocks. Key facts that make it cheap:
 
@@ -198,9 +203,9 @@ def softmax(x, dim=-1):
 
 **Attention:**
 
-```
-Attention(Q, K, V) = softmax( Q Kᵀ / sqrt(d_k) ) V
-```
+$$
+\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\!\left(\frac{Q K^\top}{\sqrt{d_k}}\right) V
+$$
 
 with `Q ∈ ℝ^{n×d_k}`, `K ∈ ℝ^{m×d_k}`, `V ∈ ℝ^{m×d_v}` — none learnable here. **Masking convention:** a boolean mask `M ∈ {True, False}^{n×m}`; `True` at `(i, j)` means query `i` *may* attend to key `j`. Implement by adding `−∞` to the pre-softmax scores wherever the mask is `False` (cheaper than slicing subsequences).
 
@@ -218,10 +223,12 @@ Must handle arbitrary leading batch dims on `Q`/`K`/`V` and an optional `(seq_le
 
 ### §3.4.5 Causal multi-head self-attention
 
-```
-MultiHead(Q, K, V) = Concat(head_1, …, head_h) with head_i = Attention(Q_i, K_i, V_i)
-MultiHeadSelfAttention(x) = W_O · MultiHead(W_Q x, W_K x, W_V x)
-```
+$$
+\begin{aligned}
+\operatorname{MultiHead}(Q, K, V) &= \operatorname{Concat}(\text{head}_1, \dots, \text{head}_h), \quad \text{head}_i = \operatorname{Attention}(Q_i, K_i, V_i) \\
+\operatorname{MultiHeadSelfAttention}(x) &= W_O \cdot \operatorname{MultiHead}(W_Q x, W_K x, W_V x)
+\end{aligned}
+$$
 
 - `d_k = d_v = d_model / num_heads`.
 - Learnable parameters: `W_Q, W_K, W_V ∈ ℝ^{h·d_k × d_model}` and `W_O ∈ ℝ^{d_model × h·d_v}` — three projection matmuls plus the output projection. (Stretch: fuse `W_Q/W_K/W_V` into one matmul.)
@@ -234,10 +241,12 @@ MultiHeadSelfAttention(x) = W_O · MultiHead(W_Q x, W_K x, W_V x)
 
 Assemble a block (refer to Figure 2 in the handout):
 
-```
-y = x + MultiHeadSelfAttention(RMSNorm(x))     # sub-layer 1
-z = y + SwiGLU(RMSNorm(y))                      # sub-layer 2
-```
+$$
+\begin{aligned}
+y &= x + \operatorname{MultiHeadSelfAttention}(\operatorname{RMSNorm}(x)) &&\text{sub-layer 1} \\
+z &= y + \operatorname{SwiGLU}(\operatorname{RMSNorm}(y)) &&\text{sub-layer 2}
+\end{aligned}
+$$
 
 Then the whole model: `token embedding → num_layers blocks → final RMSNorm → Linear LM head → logits over vocab`. Constructor parameters: `vocab_size`, `context_length` (sizes the RoPE buffer), `num_layers`, `d_model`, `num_heads`, `d_ff`. Not yet present in `model.py`.
 
@@ -258,23 +267,23 @@ Findings the handout is steering you toward: parameter count and memory (`4 · N
 
 **The objective.** Train by minimising the negative log-likelihood of the true next token. One forward pass gives logits `o_i ∈ ℝ^{vocab_size}` at every position `i`; softmax turns each into a distribution over the vocabulary, and the model's probability for the token that actually comes next is
 
-```
-p_θ(x_{i+1} | x_{1:i}) = softmax(o_i)[x_{i+1}] = exp(o_i[x_{i+1}]) / Σ_{a=1}^{vocab_size} exp(o_i[a])     (17)
-```
+$$
+p_\theta(x_{i+1} \mid x_{1:i}) = \operatorname{softmax}(o_i)[x_{i+1}] = \frac{\exp(o_i[x_{i+1}])}{\sum_{a=1}^{\text{vocab\_size}} \exp(o_i[a])} \tag{17}
+$$
 
 The loss averages `−log p_θ` over every position of every sequence in the batch:
 
-```
-ℓ(θ; D) = (1 / |D|m) Σ_{x∈D} Σ_{i=1}^{m} −log p_θ(x_{i+1} | x_{1:i})     (16)
-```
+$$
+\ell(\theta; D) = \frac{1}{|D|\,m} \sum_{x \in D} \sum_{i=1}^{m} -\log p_\theta(x_{i+1} \mid x_{1:i}) \tag{16}
+$$
 
 Minimising it pushes probability mass onto the real continuations. A perfect prediction costs `0`; a uniform guess costs `log(vocab_size)` (≈ 10.8 for `vocab_size = 50,257`) — roughly the loss expected at initialisation.
 
 **Numerical care.** Don't compute `softmax` then `log`. Expand analytically,
 
-```
-−log softmax(o)[t] = logsumexp(o) − o[t],   logsumexp(o) = log Σ_a exp(o[a])
-```
+$$
+-\log \operatorname{softmax}(o)[t] = \operatorname{logsumexp}(o) - o[t], \qquad \operatorname{logsumexp}(o) = \log \sum_a \exp(o[a])
+$$
 
 and subtract `max(o)` before exponentiating — `exp` of a large logit overflows to `inf`. The shift cancels between the two terms, so it changes nothing analytically.
 
@@ -322,14 +331,16 @@ An `Optimizer` subclass implements `__init__(self, params, ...)` (pass defaults 
 
 **AdamW** (Algorithm 1 — decoupled weight decay, `t` starts at 1):
 
-```
-g   ← ∇ ℓ(θ; B_t)
-α_t ← α · sqrt(1 − β₂^t) / (1 − β₁^t)      # bias-corrected step size
-θ   ← θ − α · λ · θ                        # weight decay, decoupled from the grad
-m   ← β₁ m + (1 − β₁) g                    # first moment
-v   ← β₂ v + (1 − β₂) g²                   # second moment
-θ   ← θ − α_t · m / (sqrt(v) + ε)          # update
-```
+$$
+\begin{aligned}
+g &\leftarrow \nabla \ell(\theta; B_t) \\
+\alpha_t &\leftarrow \alpha \cdot \frac{\sqrt{1 - \beta_2^{\,t}}}{1 - \beta_1^{\,t}} \quad&&\text{bias-corrected step size} \\
+\theta &\leftarrow \theta - \alpha\, \lambda\, \theta \quad&&\text{weight decay, decoupled from the grad} \\
+m &\leftarrow \beta_1 m + (1 - \beta_1) g \quad&&\text{first moment} \\
+v &\leftarrow \beta_2 v + (1 - \beta_2) g^2 \quad&&\text{second moment} \\
+\theta &\leftarrow \theta - \alpha_t \cdot \frac{m}{\sqrt{v} + \varepsilon} \quad&&\text{update}
+\end{aligned}
+$$
 
 Typical `(β₁, β₂) = (0.9, 0.999)`; LLMs often use `(0.9, 0.95)`. `ε ≈ 1e-8`. AdamW is stateful — two extra tensors (`m`, `v`) per parameter, which is the bulk of the `adamw_accounting` memory analysis (parameters + gradients + optimizer state + activations).
 
@@ -337,11 +348,13 @@ Typical `(β₁, β₂) = (0.9, 0.999)`; LLMs often use `(0.9, 0.95)`. `ε ≈ 1
 
 A schedule is a pure function of step `t`. Cosine annealing with warmup, given `α_max`, `α_min`, warmup steps `T_w`, cosine end `T_c`:
 
-```
-t < T_w         :  α_t = (t / T_w) · α_max
-T_w ≤ t ≤ T_c   :  α_t = α_min + ½ (1 + cos( (t − T_w)/(T_c − T_w) · π )) (α_max − α_min)
-t > T_c         :  α_t = α_min
-```
+$$
+\alpha_t = \begin{cases}
+\dfrac{t}{T_w}\, \alpha_{\max} & t < T_w \\[8pt]
+\alpha_{\min} + \dfrac{1}{2}\left(1 + \cos\!\left(\dfrac{t - T_w}{T_c - T_w}\, \pi\right)\right)(\alpha_{\max} - \alpha_{\min}) & T_w \le t \le T_c \\[8pt]
+\alpha_{\min} & t > T_c
+\end{cases}
+$$
 
 ### §4.5 Gradient clipping
 
@@ -372,10 +385,12 @@ Put it together into a configurable script: CLI-controlled model/optimizer hyper
 
 Decode one token at a time from a prompt `x_{1…t}`:
 
-```
-v = TransformerLM(x_{1…t})_t ∈ ℝ^{vocab_size}      # logits at the last position
-P(x_{t+1} = i | x_{1…t}) = softmax(v)_i
-```
+$$
+\begin{aligned}
+v &= \operatorname{TransformerLM}(x_{1:t})_t \in \mathbb{R}^{\text{vocab\_size}} &&\text{logits at the last position} \\
+P(x_{t+1} = i \mid x_{1:t}) &= \operatorname{softmax}(v)_i
+\end{aligned}
+$$
 
 Append the sampled token, repeat until `<|endoftext|>` or a max length. Two decoder tricks for small models:
 

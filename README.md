@@ -5,14 +5,14 @@ table-of-contents index and note pages styled to match
 [raila.io](https://raila.io/#/writing).
 
 No framework, no bundler, no generation step. Three static files plus vendored
-copies of [marked](https://marked.js.org/) for markdown and IBM Plex Mono for
-code — no CDN dependency.
+copies of [marked](https://marked.js.org/) for markdown, [KaTeX](https://katex.org/)
+for `$$…$$` math, and IBM Plex Mono for code — no CDN dependency.
 
 ```
 index.html            app shell
 assets/style.css      editorial stylesheet (ported from the main site)
 assets/app.js         hash router + markdown rendering
-assets/vendor/        marked.min.js, ibm-plex-mono.css + fonts/
+assets/vendor/        marked.min.js, katex/ (js + css + woff2), ibm-plex-mono.css + fonts/
 content/manifest.json the list of notes + their metadata
 content/*.md, *.html  the notes themselves
 ```
@@ -72,3 +72,6 @@ published untouched. Routing is hash-based, so no SPA rewrite rules are needed.
   aside at a smaller scale.
 - External links open in a new tab and get an `↗` marker; wide tables scroll
   horizontally on their own; a lone image becomes a captioned `<figure>`.
+- A `$$` fence on its own line opens/closes a display-math block (KaTeX). Keep
+  the LaTeX free of blank lines. Use fenced code blocks with a language for
+  code; reserve `$$` for actual math, not as a plain-text escape hatch.

@@ -64,9 +64,9 @@ One accelerator held at **1 PFLOP/s for a day = 8.64 × 10¹⁹ FLOP**. So a 10�
 
 For a dense transformer, compute to train on `D` tokens with `N` parameters is
 
-```
-C ≈ 6 · N · D
-```
+$$
+C \approx 6 \cdot N \cdot D
+$$
 
 | Pass | Cost | Why |
 | --- | --- | --- |
@@ -115,9 +115,9 @@ So 2 + 4 = **6 FLOPs per parameter per token**. This ignores attention's sequenc
 
 ### Putting it Together: Time-to-Train
 
-```
-wall_clock ≈ C / (n_gpus · peak_FLOP/s · MFU)
-```
+$$
+\text{wall\_clock} \approx \frac{C}{n_{\text{gpus}} \cdot \text{peak\_FLOP/s} \cdot \text{MFU}}
+$$
 
 GPT-3 (`C` = 3.14 × 10²³), BF16, at a back-of-envelope **40% MFU**:
 
